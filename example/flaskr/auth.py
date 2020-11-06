@@ -1,6 +1,6 @@
 import functools
 
-from flask import Blueprint
+from flask import Blueprint, json
 from flask import flash
 from flask import g
 from flask import redirect
@@ -8,10 +8,9 @@ from flask import render_template
 from flask import request
 from flask import session
 from flask import url_for
+from flaskr.db import get_db
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
-
-from flaskr.db import get_db
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -74,9 +73,16 @@ def register():
                 (username, generate_password_hash(password)),
             )
             db.commit()
-            return redirect(url_for("auth.login"))
 
-        flash(error)
+            # create successful registration response object
+            response = json.dumps({
+                "category": "info",
+                "message": "User account successfully registered!"
+            })
+
+            return redirect(url_for("auth.login", response=response))
+
+        flash(error, "error")
 
     return render_template("auth/register.html")
 
@@ -104,7 +110,11 @@ def login():
             session["user_id"] = user["id"]
             return redirect(url_for("index"))
 
-        flash(error)
+        flash(error, "error")
+
+    if request.args:
+        response = json.loads(request.args['response'])
+        flash(response["message"], response["category"])
 
     return render_template("auth/login.html")
 
