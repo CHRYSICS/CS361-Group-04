@@ -1,20 +1,24 @@
 -- Initialize the database.
 -- Drop any existing data and create empty tables.
 
-DROP TABLE IF EXISTS user;
-DROP TABLE IF EXISTS post;
+DROP TABLE IF EXISTS ingredient;
+DROP TABLE IF EXISTS ingredientCat;
 
-CREATE TABLE user (
+CREATE TABLE ingredient (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  username TEXT UNIQUE NOT NULL,
-  password TEXT NOT NULL
+  name TEXT UNIQUE NOT NULL,
+  FOREIGN KEY (category_id) REFERENCES ingredientCat (id),
+  rNourishment REAL DEFAULT 0,
+  rValue REAL DEFAULT 0,
+  rHumanWelfare REAL DEFAULT 0,
+  rAnimalWelfare REAL DEFAULT 0,
+  rResourceCons REAL DEFAULT 0,
+  rBiodiversity REAL DEFAULT 0,
+  rGlobalWarming REAL DEFAULT 0,
 );
 
-CREATE TABLE post (
+CREATE TABLE ingredientCat (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  author_id INTEGER NOT NULL,
-  created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  title TEXT NOT NULL,
-  body TEXT NOT NULL,
-  FOREIGN KEY (author_id) REFERENCES user (id)
+  name TEXT UNIQUE NOT NULL,
 );
+
