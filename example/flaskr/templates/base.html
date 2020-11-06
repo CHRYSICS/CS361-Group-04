@@ -1,8 +1,8 @@
 <!doctype html>
-<title>{% block title %}{% endblock %} - Flaskr</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<title>{% block title %}{% endblock %} - Ethical Eating</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 <nav>
-  <h1><a href="{{ url_for('index') }}">Flaskr</a></h1>
+  <h1><a href="{{ url_for('index') }}">Ethical Eating</a></h1>
   <ul>
     {% if g.user %}
       <li><span>{{ g.user['username'] }}</span>
@@ -17,8 +17,8 @@
   <header>
     {% block header %}{% endblock %}
   </header>
-  {% for message in get_flashed_messages() %}
-    <div class="flash">{{ message }}</div>
+  {% for category, message in get_flashed_messages(with_categories=true) %}
+    <div class={{ category }}>{{ message }}</div>
   {% endfor %}
   {% block content %}{% endblock %}
 </section>
