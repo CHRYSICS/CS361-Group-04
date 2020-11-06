@@ -139,3 +139,27 @@ input[type=submit] {
   align-self: start;
   min-width: 10em;
 }
+
+#message {
+  display: none;
+}
+
+.valid {
+  color: #4fa837;
+}
+
+.valid:before {
+  position: relative;
+  left: -5px;
+  content: "✔";
+}
+
+.invalid {
+  color: #a83737;
+}
+
+.invalid:before {
+  position: relative;
+  left: -5px;
+  content: "✖";
+}
