@@ -11,10 +11,7 @@ def test_register(client, app):
 
     # test that successful registration redirects to the login page
     response = client.post("/auth/register", data={"username": "a", "password": "a"})
-    assert "http://localhost/auth/login?" \
-           "response=%7B%22" \
-           "category%22%3A+%22info%22%2C+%22" \
-           "message%22%3A+%22User+account+successfully+registered%21%22%7D" == response.headers["Location"]
+   assert (response.status == '302 FOUND')
 
     # test that the user was inserted into the database
     with app.app_context():
