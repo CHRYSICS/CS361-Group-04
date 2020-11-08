@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}BetterBytes{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<h3>Find out how to make more ethical recipes!</h3>
+
+<h3>How does it work?</h3>
+<h4>
+  Choosing common recipes or building a new one, we'll help you learn more about
+  the ethical impacts of the foods we eat!  Common ingredients are listed to include
+  our ethical rating system to provide you the information and alternatives to 
+  design ethical recipes.
+</h4>
+<h4>
+  Explore the application without login requires, and see what ethical impact you can make:
+</h4>
+<a href="{{ url_for('blog.index') }}">
+  <button>CONTINUE AS GUEST</button>
+</a>
+<h4>
+  If you would like to save your ethical recipes, consider registering or logging into an account:
+</h4>
+<a href="{{ url_for('auth.login') }}">
+    <button>LOGIN/REGISTER</button>
+</a>
+{% endblock %}
