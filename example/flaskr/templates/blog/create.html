@@ -5,11 +5,16 @@
 {% endblock %}
 
 {% block content %}
-  <form method="post">
+  <form id="recipe" method="post">
     <label for="title">Title</label>
     <input name="title" id="title" value="{{ request.form['title'] }}" required>
     <label for="body">Body</label>
     <textarea name="body" id="body">{{ request.form['body'] }}</textarea>
+    <h2>Enter Ingredients</h2>
+    <button type="button" id="addButton" onclick="createIngInput(event)">Add Ingredient</button>
+    <br id="listFooter">
     <input type="submit" value="Save">
   </form>
+
+  <script type="text/javascript" src="{{ url_for('static', filename='js/recipeScript.js') }}"></script>
 {% endblock %}

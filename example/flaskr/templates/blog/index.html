@@ -6,6 +6,25 @@
 {% endblock %}
 
 {% block content %}
+<form method="POST">
+  <label for="search">Search</label>
+  <input name="search" id="search" value="{{ request.form['search'] }}">
+  <label for="filter">Filter</label>
+  <div>
+  <input type = "radio"
+        name = "filter"
+        id = "title"
+        value = "title"
+        checked = "checked" />
+        <label for="title">By title</label>        
+  <input type = "radio"
+        name = "filter"
+        id = "username"
+        value = "username"/>
+        <label for="title">By author</label>   
+  </div>     
+  <input type="submit" value="Search">
+</form>
   {% for post in posts %}
     <article class="post">
       <header>

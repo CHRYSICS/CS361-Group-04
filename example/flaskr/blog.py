@@ -13,17 +13,30 @@ from flaskr.db import get_db
 bp = Blueprint("blog", __name__,  url_prefix="/blog")
 
 
-@bp.route("/index")
+@bp.route("/index", methods=("GET", "POST"))
 def index():
     """Show all the posts, most recent first."""
     db = get_db()
-    posts = db.execute(
-        "SELECT p.id, title, body, created, author_id, username"
-        " FROM post p JOIN user u ON p.author_id = u.id"
-        " ORDER BY created DESC"
-    ).fetchall()
-    return render_template("blog/index.html", posts=posts)
+    
+    # if a search query was done, post only posts that match search and filter provided
+    if request.method == "POST":
+        searchQuery = "SELECT p.id, title, body, created, author_id, username" \
+                " FROM post p JOIN user u ON p.author_id = u.id" \
+                " WHERE " + request.form["filter"] + " LIKE '%" + request.form["search"] + "%'" \
+                " ORDER BY created DESC"
 
+        posts = db.execute(searchQuery).fetchall()
+
+    # else post all posts in database
+    else:
+        posts = db.execute(
+            "SELECT p.id, title, body, created, author_id, username"
+            " FROM post p JOIN user u ON p.author_id = u.id"
+            " ORDER BY created DESC"
+        ).fetchall()
+
+    return render_template("blog/index.html", posts=posts)
+    
 
 def get_post(id, check_author=True):
     """Get a post and its author by id.
