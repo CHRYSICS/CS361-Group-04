@@ -58,10 +58,11 @@ def get_post(id, check_author=True):
 
 
 @bp.route("/create", methods=("GET", "POST"))
-@login_required
 def create():
     """Create a new post for the current user."""
     if request.method == "POST":
+        if g.user is None:
+            return render_template("guest/accessError.html")
         title = request.form["title"]
         body = request.form["body"]
         error = None
