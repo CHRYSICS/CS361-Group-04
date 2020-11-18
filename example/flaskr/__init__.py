@@ -36,11 +36,12 @@ def create_app(test_config=None):
     db.init_app(app)
 
     # apply the blueprints to the app
-    from flaskr import auth, blog, guest
+    from flaskr import auth, blog, guest, ingredient
 
     app.register_blueprint(guest.bp)
     app.register_blueprint(auth.bp)
     app.register_blueprint(blog.bp)
+    app.register_blueprint(ingredient.bp)
 
     # new comment:
     # make url_for('portal') == url_for('guest.portal')

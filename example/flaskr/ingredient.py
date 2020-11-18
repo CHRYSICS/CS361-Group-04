@@ -20,10 +20,11 @@ RATINGS = [ 'r_nourishment',
             'r_global_warming',]
 
 @bp.route("/<ingredientName>")
-def getIngredient():
+def getIngredient(ingredientName):
     """Retrieve an Ingredient by name
     Returns None if Ingredient not present
     """
+    ingredientName = str(ingredientName)
     if request.method != "GET":
         abort(405)
     
@@ -33,18 +34,16 @@ def getIngredient():
     if not ingredientName:
         error = "Ingredient name is required."
     else:
-        ingredient = db.execute(
-            "SELECT * FROM ingredient WHERE name = ?", ingredientName)
-            .fetchone()
+        ingredient = db.execute("SELECT * FROM ingredient WHERE name = ?", (ingredientName,)).fetchone()
     
     if ingredient is None:
         abort(404, f"Ingredient with name {ingredientName} doesn't exist.")
-    
+
     return ingredient
 
 
-@bp.route("/<str:ingredientName>/alt")
-def getAlternatives():
+@bp.route("/<ingredientName>/alt")
+def getAlternatives(ingredientName):
     """ Retrieve a list of Ingredients that may be substituted for 
     ingredientName
     """
@@ -57,14 +56,14 @@ def getAlternatives():
         else:
             alternatives = db.execute(
                 "SELECT * FROM ingredient WHERE category_id = "
-                "(SELECT category_id FROM ingredient WHERE name = ?)", ingredientName)
+                "(SELECT category_id FROM ingredient WHERE name = ?)", (ingredientName,))
 
         if alternatives is None:
             abort(404, f"Ingredient with name {ingredientName} has no alternatives.")
         
         return alternatives
 
-def getAlternativesByRating(ratingName):
+def getAlternativesByRating(ingredientName, ratingName):
     """ Retrieve a list of Ingredients that may be subsituted for ingredientName 
     with a higher score on a particular ethical rating
     """
@@ -79,7 +78,7 @@ def getAlternativesByRating(ratingName):
                 "SELECT * FROM ingredient WHERE category_id="
                 "(SELECT category_id FROM ingredient WHERE name = ?)" 
                 "AND ? > (SELECT ? FROM ingredient WHERE name= ?)", 
-                ingredientName, ratingName, ratingName, ingredientName)
+                (ingredientName, ratingName, ratingName, ingredientName))
 
         if alternatives is None:
             abort(
@@ -87,7 +86,7 @@ def getAlternativesByRating(ratingName):
 
         return alternatives
 
-def getAlternativesByRatingAvg():
+def getAlternativesByRatingAvg(ingredientName):
     """ Retrieve a list of Ingredients that may be subsituted for ingredientName 
     with a higher average of all ratings
     """
@@ -107,7 +106,7 @@ def getAlternativesByRatingAvg():
                 SELECT (r_nourishment + r_value + r_human_welfare + \
                 r_animal_welfare + r_resource_cons + r_biodiversity + \
                 r_global_warming)/7 FROM ingredient WHERE name = ?",
-                ingredientName)
+                (ingredientName,))
 
         if alternatives is None:
             abort(
