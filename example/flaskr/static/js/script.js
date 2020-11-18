@@ -14,37 +14,29 @@ myInput.onblur = function() {
   document.getElementById("message").style.display = "none";
 }
 
+const validateElement = (element, regex) => {
+  if(myInput.value.match(regex)) {
+    element.classList.remove("invalid");
+    element.classList.add("valid");
+  } else {
+    element.classList.remove("valid");
+    element.classList.add("invalid");
+  }
+}
+
 // When the user starts to type something inside the password field
 myInput.onkeyup = function() {
   // Validate lowercase letters
   const lowerCaseLetters = /[a-z]/g;
-  if(myInput.value.match(lowerCaseLetters)) {
-    letter.classList.remove("invalid");
-    letter.classList.add("valid");
-  } else {
-    letter.classList.remove("valid");
-    letter.classList.add("invalid");
-  }
+  validateElement(letter, lowerCaseLetters);
 
   // Validate capital letters
   const upperCaseLetters = /[A-Z]/g;
-  if(myInput.value.match(upperCaseLetters)) {
-    capital.classList.remove("invalid");
-    capital.classList.add("valid");
-  } else {
-    capital.classList.remove("valid");
-    capital.classList.add("invalid");
-  }
+  validateElement(capital, upperCaseLetters);
 
   // Validate numbers
   const numbers = /[0-9]/g;
-  if(myInput.value.match(numbers)) {
-    number.classList.remove("invalid");
-    number.classList.add("valid");
-  } else {
-    number.classList.remove("valid");
-    number.classList.add("invalid");
-  }
+  validateElement(number, numbers);
 
   // Validate length
   if(myInput.value.length >= 8) {

@@ -42,16 +42,9 @@ def create_app(test_config=None):
     app.register_blueprint(auth.bp)
     app.register_blueprint(blog.bp)
 
-    # new comment:
-    # make url_for('portal') == url_for('guest.portal')
     # Before navigating to the content of this application,
     # direct user to portal.  This gives user the option 
     # to explore the application as either guest or user.
-
-    # old comment:
-    # in another app, you might define a separate main index here with
-    # app.route, while giving the blog blueprint a url_prefix, but for
-    # the tutorial the blog will be the main index
     app.add_url_rule("/", endpoint="portal")
 
     return app
