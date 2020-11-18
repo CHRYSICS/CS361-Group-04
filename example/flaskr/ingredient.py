@@ -103,15 +103,18 @@ def getAlternativesByRatingAvg(ingredientName):
         error = "Ingredient name is required."
     else:
         alternatives = db.execute(
-            "SELECT * FROM ingredient WHERE \
-            SELECT (r_nourishment + r_value + r_human_welfare + \
-            r_animal_welfare + r_resource_cons + r_biodiversity + \
-            r_global_warming)/7 as r_avg \
-            FROM ingredient WHERE r_avg > \
-            SELECT (r_nourishment + r_value + r_human_welfare + \
-            r_animal_welfare + r_resource_cons + r_biodiversity + \
-            r_global_warming)/7 FROM ingredient WHERE name = ?",
-            (ingredientName,))
+            "DROP TABLE IF EXISTS table1; \
+            CREATE TEMP TABLE table1 AS SELECT * FROM \
+            (SELECT id, r_avg FROM(SELECT id, category_id, \
+                (r_nourishment + r_value + r_human_welfare + r_animal_welfare + \
+                r_resource_cons + r_biodiversity + r_global_warming)/7 as r_avg \
+                FROM ingredient) \
+             WHERE category_id=(SELECT category_id \
+                 FROM ingredient WHERE name=?)) \
+            INNER JOIN ingredient USING(id); \
+            SELECT * FROM table1 WHERE r_avg > \
+            (SELECT r_avg FROM table1 WHERE name=?)",
+            (ingredientName,ingredientName))
 
     if alternatives is None:
         abort(
