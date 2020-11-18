@@ -24,7 +24,6 @@ def getIngredient(ingredientName):
     """Retrieve an Ingredient by name
     Returns None if Ingredient not present
     """
-    ingredientName = str(ingredientName)
     if request.method != "GET":
         abort(405)
     
@@ -47,70 +46,76 @@ def getAlternatives(ingredientName):
     """ Retrieve a list of Ingredients that may be substituted for 
     ingredientName
     """
-    if request.method == "GET":
-        db = get_db()
-        error = None
+    if request.method != "GET":
+        abort(405)
 
-        if not ingredientName:
-            error = "Ingredient name is required."
-        else:
-            alternatives = db.execute(
-                "SELECT * FROM ingredient WHERE category_id = "
-                "(SELECT category_id FROM ingredient WHERE name = ?)", (ingredientName,))
+    db = get_db()
+    error = None
 
-        if alternatives is None:
-            abort(404, f"Ingredient with name {ingredientName} has no alternatives.")
-        
-        return alternatives
+    if not ingredientName:
+        error = "Ingredient name is required."
+    else:
+        alternatives = db.execute(
+            "SELECT * FROM ingredient WHERE category_id = "
+            "(SELECT category_id FROM ingredient WHERE name = ?)", (ingredientName,))
+
+    if alternatives is None:
+        abort(404, f"Ingredient with name {ingredientName} has no alternatives.")
+    
+    return alternatives
 
 def getAlternativesByRating(ingredientName, ratingName):
     """ Retrieve a list of Ingredients that may be subsituted for ingredientName 
     with a higher score on a particular ethical rating
     """
-    if request.method == "GET":
-        db = get_db()
-        error = None
+    if request.method != "GET":
+        abort(405)
 
-        if not ingredientName:
-            error = "Ingredient name is required."
-        else:
-            alternatives = db.execute(
-                "SELECT * FROM ingredient WHERE category_id="
-                "(SELECT category_id FROM ingredient WHERE name = ?)" 
-                "AND ? > (SELECT ? FROM ingredient WHERE name= ?)", 
-                (ingredientName, ratingName, ratingName, ingredientName))
+    db = get_db()
+    error = None
 
-        if alternatives is None:
-            abort(
-                404, f"Ingredient with name {ingredientName} has no alternatives.")
+    if not ingredientName:
+        error = "Ingredient name is required."
+    else:
+        alternatives = db.execute(
+            "SELECT * FROM ingredient WHERE category_id="
+            "(SELECT category_id FROM ingredient WHERE name = ?)" 
+            "AND ? > (SELECT ? FROM ingredient WHERE name= ?)", 
+            (ingredientName, ratingName, ratingName, ingredientName))
 
-        return alternatives
+    if alternatives is None:
+        abort(
+            404, f"Ingredient with name {ingredientName} has no alternatives.")
+
+    return alternatives
 
 def getAlternativesByRatingAvg(ingredientName):
     """ Retrieve a list of Ingredients that may be subsituted for ingredientName 
     with a higher average of all ratings
     """
-    if request.method == "GET":
-        db = get_db()
-        error = None
+    if request.method != "GET":
+        abort(405)
 
-        if not ingredientName:
-            error = "Ingredient name is required."
-        else:
-            alternatives = db.execute(
-                "SELECT * FROM ingredient WHERE \
-                SELECT (r_nourishment + r_value + r_human_welfare + \
-                r_animal_welfare + r_resource_cons + r_biodiversity + \
-                r_global_warming)/7 as r_avg \
-                FROM ingredient WHERE r_avg > \
-                SELECT (r_nourishment + r_value + r_human_welfare + \
-                r_animal_welfare + r_resource_cons + r_biodiversity + \
-                r_global_warming)/7 FROM ingredient WHERE name = ?",
-                (ingredientName,))
+    db = get_db()
+    error = None
 
-        if alternatives is None:
-            abort(
-                404, f"Ingredient with name {ingredientName} has no alternatives.")
+    if not ingredientName:
+        error = "Ingredient name is required."
+    else:
+        alternatives = db.execute(
+            "SELECT * FROM ingredient WHERE \
+            SELECT (r_nourishment + r_value + r_human_welfare + \
+            r_animal_welfare + r_resource_cons + r_biodiversity + \
+            r_global_warming)/7 as r_avg \
+            FROM ingredient WHERE r_avg > \
+            SELECT (r_nourishment + r_value + r_human_welfare + \
+            r_animal_welfare + r_resource_cons + r_biodiversity + \
+            r_global_warming)/7 FROM ingredient WHERE name = ?",
+            (ingredientName,))
 
-        return alternatives
+    if alternatives is None:
+        abort(
+            404, f"Ingredient with name {ingredientName} has no alternatives.")
+
+    return alternatives
 
