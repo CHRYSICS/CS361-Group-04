@@ -79,11 +79,12 @@ def getAlternativesByRating(ingredientName, ratingName):
     if not ingredientName:
         error = "Ingredient name is required."
     else:
-        alts = db.execute(
-            "SELECT * FROM ingredient WHERE category_id="
-            "(SELECT category_id FROM ingredient WHERE name = ?)" 
-            "AND ? > (SELECT ? FROM ingredient WHERE name= ?)", 
-            (ingredientName, ratingName, ratingName, ingredientName))
+        ingredient = db.execute("SELECT * FROM ingredient WHERE name = ?", (ingredientName,)).fetchone()
+        equiv = db.execute(
+            "SELECT * FROM ingredient WHERE category_id= \
+            (SELECT category_id FROM ingredient WHERE name = ?)",  
+            (ingredientName,))
+        alts = [r for r in equiv if  r[ratingName] > ingredient[ratingName]]
 
     if alts is None:
         abort(
