@@ -10,13 +10,7 @@ from werkzeug.exceptions import abort
 from flaskr.auth import login_required
 from flaskr.db import get_db
 
-bp = Blueprint("recipe", __name__,  url_prefix="/recipe")
-
-class Recipe:
-    def __init__(self, recipeRow, ingredientRows):
-        self.recipeRow = recipeRow
-        self.ingredientRows = ingredientRows
-
+bp = Blueprint("recipe", __name__, url_prefix="/recipe")
 
 @bp.route("/index")
 def index():
@@ -29,7 +23,7 @@ def index():
     return render_template("recipe/index.html", recipes=recipes)
 
 
-def get_recipe(id, check_author=True):
+def get_recipe_details(id, check_author=True):
     """Create a Recipe by querying the database by recipe id. 
 
     Checks that the id exists and optionally that the current user is
@@ -44,7 +38,7 @@ def get_recipe(id, check_author=True):
     recipe = (
         get_db()
         .execute(
-            "SELECT * FROM recipe r WHERE p.id = ?",
+            "SELECT * FROM recipe r WHERE r.id = ?",
             (id,),
         )
         .fetchone()
@@ -67,7 +61,7 @@ def get_recipe(id, check_author=True):
         )
     )
 
-    return Recipe(recipe, ingredients)
+    return ingredients
 
 
 @bp.route("/create")
@@ -119,3 +113,6 @@ def delete(id):
     db = get_db()
     db.execute("DELETE FROM recipe WHERE id = ?", (id,))
     db.commit()
+
+
+
