@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}Recipes{% endblock %}</h1>
+{% if g.user %}
+<a class="action" href="{{ url_for('recipe.create') }}">New</a>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<article class="post">
+    <header>
+        <div>
+            <h1>{{ recipe['title'] }}</h1>
+            <div class="about">by {{ recipe['username'] }} on {{ recipe['created'].strftime('%Y-%m-%d') }}</div>
+        </div>
+        {% if g.user['id'] == recipe['author_id'] %}
+        <a class="action" href="{{ url_for('recipe.update', id=recipe['id']) }}">Edit</a>
+        {% endif %}
+    </header>
+    <p class="body">{{ recipe['body'] }}</p>
+    <ul>
+        {% for ingredient in ingredients %}
+        <li>
+            <h2>{{ingredient['name']}}, {{ ingredient['amount'] }} {{ ingredient['unit']}} </h2>
+            You
+            <ul>
+                <li> Nourishment: {{ingredient['r_nourishment']}}</li>
+                <li> Value: {{ingredient['r_value']}}</li>
+            </ul>
+            Others
+            <ul>
+                <li> Human Welfare: {{ingredient['r_human_welfare']}}</li>
+                <li> Animal Welfare: {{ingredient['r_animal_welfare']}}</li>
+            </ul>
+            Planet
+            <ul>                
+                <li> Resource Conservation: {{ingredient['r_resource_cons']}}</li>
+                <li> Biodiversity: {{ingredient['r_biodiversity']}}</li>
+                <li> Global Warming: {{ingredient['r_global_warming']}}</li>
+            </ul>
+            <br><br>
+        </li>
+        {% endfor %}
+    </ul>
+</article>
+<hr>
+{% endblock %}

@@ -22,19 +22,15 @@ def index():
     ).fetchall()
     return render_template("recipe/index.html", recipes=recipes)
 
+@bp.route("/<int:id>")
+def view_recipe(id):
+    """ View a recipe and its ingredients."""
+    recipe = get_recipe(id)
+    ingredients = get_recipe_ingredients(id)
+    return render_template("recipe/view.html", recipe=recipe, ingredients=ingredients)
+    
 
-def get_recipe_details(id, check_author=True):
-    """Create a Recipe by querying the database by recipe id. 
-
-    Checks that the id exists and optionally that the current user is
-    the author.
-
-    :param id: id of recipe
-    :param check_author: require the current user to be the author
-    :return: the recipe and all its ingredients
-    :raise 404: if a post with the given id doesn't exist
-    :raise 403: if the current user isn't the author
-    """
+def get_recipe(id, check_author = True):
     recipe = (
         get_db()
         .execute(
@@ -43,24 +39,38 @@ def get_recipe_details(id, check_author=True):
         )
         .fetchone()
     )
-
     if recipe is None:
-        abort(404, f"Post id {id} doesn't exist.")
+        abort(404, f"Recipe id {id} doesn't exist.")
+    
+    recipe = (get_db()
+            .execute(
+                "SELECT * FROM recipe r JOIN user u ON r.author_id = u.id \
+                WHERE r.id = ?",
+                (id,),
+            )
+    ).fetchone()
 
     if check_author and recipe["author_id"] != g.user["id"]:
         abort(403)
 
+    return recipe
+
+def get_recipe_ingredients(id):
+    """Get a list of ingredients in a Recipe querying the database by recipe id. ∂
+    """
+    recipe = get_recipe(id)
     ingredients = (
         get_db()
         .execute(
             "SELECT recipe_id, ingredient_id, amount, unit, name, category_id \
+            r_nourishment, r_value, r_human_welfare, r_animal_welfare,   \
+            r_resource_cons, r_biodiversity, r_global_warming\
             FROM recipe_ingredient ri \
             JOIN ingredient i ON i.id=ingredient_id \
-            WHERE recipe_id= ?"
+            WHERE recipe_id= ?",
             (id,)
         )
     )
-
     return ingredients
 
 
