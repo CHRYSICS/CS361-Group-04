@@ -1,7 +1,7 @@
 
 -- Inserts dummy data into ingredient_cat and ingredient tables
 
-INSERT INTO ingredient_cat ('name') VALUES ('FAT'), ('POTATO'), ('SALT'), ('SPICE'), ('MILK');
+INSERT INTO ingredient_cat ('name') VALUES ('Fat'), ('Potato'), ('Salt'), ('Spice'), ('Milk');
 
 INSERT INTO ingredient VALUES (NULL,'butter-generic', 1, 3.0, 3.5, 3.0, 2.5, 2.5, 3.0, 2.0);
 INSERT INTO ingredient VALUES (NULL, 'butter-organic', 1, 3.0, 3.5, 3.0, 3.0, 3.0, 3.5, 2.0);
