@@ -16,4 +16,7 @@ def arrival():
         # User logged, instead redirect to main index page
         return redirect(url_for("blog.index"))
 
-
+@bp.route("/guestRestricted")
+def accessError():
+    """Redirect Route for guest restriction on application"""
+    return render_template("guest/accessError.html")

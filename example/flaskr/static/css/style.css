@@ -163,8 +163,3 @@ input[type=submit] {
   left: -5px;
   content: "✖";
 }
-
-.badingredient {
-    background: rgb(250,7,7);
-    background: radial-gradient(circle, rgba(250,7,7,0.8021941198354342) 0%, rgba(251,115,149,0.6649392178746498) 28%, rgba(2,0,36,0) 100%);
-}
