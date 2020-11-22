@@ -14,7 +14,7 @@ def arrival():
         return render_template("guest/portal.html")
     else:
         # User logged, instead redirect to main index page
-        return redirect(url_for("blog.index"))
+        return redirect(url_for("recipe.index"))
 
 @bp.route("/guestRestricted")
 def accessError():

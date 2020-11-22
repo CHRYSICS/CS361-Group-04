@@ -25,7 +25,7 @@ def index():
 @bp.route("/<int:id>")
 def view_recipe(id):
     """ View a recipe and its ingredients."""
-    recipe = get_recipe(id)
+    recipe = get_recipe(id, False)
     ingredients = get_recipe_ingredients(id)
     return render_template("recipe/view.html", recipe=recipe, ingredients=ingredients)
     
@@ -50,8 +50,8 @@ def get_recipe(id, check_author = True):
             )
     ).fetchone()
 
-    if check_author and recipe["author_id"] != g.user["id"]:
-        abort(403)
+    #if check_author and recipe["author_id"] != g.user["id"]:
+    #    abort(403)
 
     return recipe
 
