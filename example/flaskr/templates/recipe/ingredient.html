@@ -7,16 +7,6 @@
 {% block content %}
 
 {% for ingredient in ingredients %}
-<style>
-    .badingredient {
-        background: rgba(250,0,0,.57);
-        background: linear-gradient(0deg, rgba(255,0,0,0.5669000021883753) 0%, rgba(255,0,0,0) 100%);
-    }
-    .goodingredient {
-        background: rgba(0, 255,67,.57);
-        background: linear-gradient(0deg, rgba(0,255,67,0.5669000021883753) 0%, rgba(0,255,67,0) 100%);
-    }
-</style>
 <article class="post">
     <header>
         <div>
@@ -25,38 +15,16 @@
     </header>
     <p class="body">
         <h2>Ethical Ratings for {{ ingredient['name']}} </h2>
-        <ul id="ratings-list">
-            <li><span id="value">Nourishment: {{ ingredient['r_nourishment}}</span></li>
-            <li><span id="value2">Value: {{ ingredient['r_value']}}</span></li>
-            <li><span id="value3">Human Welfare: {{ ingredient['r_human_welfare']}}</span></li>
-            <li><span id="value4">Animal Welfare: {{ ingredient['r_animal_welfare']}}</span></li>
-            <li><span id="value5">Resource Conservation: {{ ingredient['r_resource_cons']}}</span></li>
-            <li><span id="value6">Biodiversity: {{ ingredient['r_biodiversity']}}</span></li>
-            <li><span id="value7">Global Warming: {{ ingredient['r_global_warming']}}</span></li>
-            <li><span id="value8">Average Ethical Rating: {{ ingredient['r_avg']}}</span></li>
+        <ul> 
+            <li>Nourishment: {{ ingredient['r_nourishment']}} </li>
+            <li>Value: {{ ingredient['r_value']}} </li>
+            <li>Human Welfare: {{ ingredient['r_human_welfare']}} </li>
+            <li>Animal Welfare: {{ ingredient['r_animal_welfare']}} </li>
+            <li>Resource Conservation: {{ ingredient['r_resource_cons']}} </li>
+            <li>Biodiversity: {{ ingredient['r_biodiversity']}} </li>
+            <li>Global Warming: {{ ingredient['r_global_warming']}} </li>
+            <li>Average Ethical Rating: {{ ingredient['r_avg']}} </li>
         </ul>
-        <script>
-            //Highlights all negative elements (<= 2.5) in red gradient, good elements (>= 4.0) in green.
-            function ratingStyle() {
-                var ratingsList = document.getElementById("ratings-list");
-                
-                for (var i = 0; i < 8; i++) {
-                    //Retrieves id of "value(number)"
-                    var valueString = document.getElementById("value" + (i + 1) + ""); 
-
-                    //If (the number at the end of the string) is greater or less than value, highlights.
-                    if (Number(valueString.innerHTML.substr(valueString.innerHTML.length - 3, valueString.innerHTML.length)) <= 2.5) {
-                        valueString.classList.add("badingredient");
-                    } else if (Number(valueString.innerHTML.substr(valueString.innerHTML.length - 3, valueString.innerHTML.length)) >= 4.0) {
-                        valueString.classList.add("goodingredient");
-                    }
-                }
-
-                //debug
-                //alert(Number(nourishment.substr(nourishment.length - 3, nourishment.length)
-            }
-            window.onload = ratingStyle;
-        </script>
     </p>
 </article>
 {% if not loop.last %}
