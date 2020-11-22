@@ -30,7 +30,7 @@ def view_recipe(id):
     return render_template("recipe/view.html", recipe=recipe, ingredients=ingredients)
     
 
-def get_recipe(id, check_author = True):
+def get_recipe(id):
     recipe = (
         get_db()
         .execute(
@@ -49,9 +49,6 @@ def get_recipe(id, check_author = True):
                 (id,),
             )
     ).fetchone()
-
-    #if check_author and recipe["author_id"] != g.user["id"]:
-    #    abort(403)
 
     return recipe
 
