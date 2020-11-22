@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Recipes{% endblock %}</h1>
+  <a class="action" href="{{ url_for('blog.create') }}">Build New Recipe</a>
+{% endblock %}
+
+{% block content %}
+<form method="POST">
+  <label for="search">Search</label>
+  <input name="search" id="search" value="{{ request.form['search'] }}">
+  <label for="filter">Filter</label>
+  <div>
+  <input type = "radio"
+        name = "filter"
+        id = "title"
+        value = "title"
+        checked = "checked" />
+        <label for="title">By title</label>        
+  <input type = "radio"
+        name = "filter"
+        id = "username"
+        value = "username"/>
+        <label for="title">By author</label>   
+  </div>     
+  <input type="submit" value="Search">
+</form>
+  {% for post in posts %}
+    <article class="post">
+      <header>
+        <div>
+          <h1>{{ post['title'] }}</h1>
+          <div class="about">by {{ post['username'] }} on {{ post['created'].strftime('%Y-%m-%d') }}</div>
+        </div>
+        {% if g.user['id'] == post['author_id'] %}
+          <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
+        {% endif %}
+        <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Save to Recipe Book</a>
+      </header>
+      <p class="body">{{ post['body'] }}</p>
+    </article>
+    {% if not loop.last %}
+      <hr>
+    {% endif %}
+  {% endfor %}
+{% endblock %}
