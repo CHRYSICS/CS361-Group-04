@@ -163,3 +163,13 @@ input[type=submit] {
   left: -5px;
   content: "✖";
 }
+
+.bad-rating {
+  background: rgba(250,0,0,.57);
+  background: linear-gradient(0deg, rgba(255,0,0,0.5669000021883753) 0%, rgba(255,0,0,0) 100%);
+}
+
+.good-rating {
+  background: rgba(0, 255,67,.57);
+  background: linear-gradient(0deg, rgba(0,255,67,0.5669000021883753) 0%, rgba(0,255,67,0) 100%);
+}
