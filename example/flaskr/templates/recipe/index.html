@@ -1,28 +1,51 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<h1>{% block title %}Recipes{% endblock %}</h1>
-
-<a class="action" href="{{ url_for('recipe.create') }}">New</a>
-
+  <h1>{% block title %}Recipes{% endblock %}</h1>
+  <a class="action" href="{{ url_for('recipe.create') }}">New Recipe</a>
 {% endblock %}
 
 {% block content %}
-{% for recipe in recipes %}
-<article class="post">
-    <header>
+<form method="POST">
+  <label for="search">Search</label>
+  <input name="search" id="search" value="{{ request.form['search'] }}">
+  <label for="filter">Filter</label>
+  <div>
+  <input type = "radio"
+        name = "filter"
+        id = "title"
+        value = "title"
+        checked = "checked" />
+        <label for="title">By title</label>
+  <input type = "radio"
+      name = "filter"
+      id = "category"
+      value = "category" />
+      <label for="category">By category</label>
+  <input type = "radio"
+        name = "filter"
+        id = "username"
+        value = "username"/>
+        <label for="username">By author</label>
+  </div>
+  <input type="submit" value="Search">
+</form>
+  {% for recipe in recipes %}
+    <article class="recipe">
+      <header>
         <div>
-            <h1>{{ recipe['title'] }}</h1>
-            <div class="about">by {{ recipe['username'] }} on {{ recipe['created'].strftime('%Y-%m-%d') }}</div>
+          <h1>{{ recipe['title'] }}</h1>
+          <div class="about">by {{ recipe['username'] }} on {{ recipe['created'].strftime('%Y-%m-%d') }}</div>
         </div>
-
-        <a class="action" href="{{ url_for('recipe.view_recipe', id=recipe['id']) }}">Select</a>
-
-    </header>
-    <p class="body">{{ recipe['body'] }}</p>
-</article>
-{% if not loop.last %}
-<hr>
-{% endif %}
-{% endfor %}
+        {% if g.user['id'] == recipe['author_id'] %}
+          <a class="action" href="{{ url_for('recipe.update', id=recipe['id']) }}">Edit</a>
+        {% endif %}
+        <a class="action" href="{{ url_for('recipe.update', id=recipe['id']) }}">Save to Recipe Book</a>
+      </header>
+      <p class="body">{{ recipe['body'] }}</p>
+    </article>
+    {% if not loop.last %}
+      <hr>
+    {% endif %}
+  {% endfor %}
 {% endblock %}
