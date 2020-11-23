@@ -25,7 +25,7 @@ def index():
 @bp.route("/<int:id>")
 def view_recipe(id):
     """ View a recipe and its ingredients."""
-    recipe = get_recipe(id, False)
+    recipe = get_recipe(id)
     ingredients = get_recipe_ingredients(id)
     return render_template("recipe/view.html", recipe=recipe, ingredients=ingredients)
     
