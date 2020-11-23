@@ -26,11 +26,11 @@ def test_author_required(app, client, auth):
     # change the post author to another user
     with app.app_context():
         db = get_db()
-        db.execute("UPDATE post SET author_id = 2 WHERE id = 1")
+        db.execute("UPDATE recipe SET author_id = 2 WHERE id = 1")
         db.commit()
 
     auth.login()
-    # current user can't modify other user's post
+    # current user can't modify other user's recipe
     assert client.post("search/1/update").status_code == 403
     assert client.post("search/1/delete").status_code == 403
     # current user doesn't see edit link
@@ -50,7 +50,7 @@ def test_create(client, auth, app):
 
     with app.app_context():
         db = get_db()
-        count = db.execute("SELECT COUNT(id) FROM post").fetchone()[0]
+        count = db.execute("SELECT COUNT(id) FROM recipe").fetchone()[0]
         assert count == 2
 
 
@@ -61,8 +61,8 @@ def test_update(client, auth, app):
 
     with app.app_context():
         db = get_db()
-        post = db.execute("SELECT * FROM post WHERE id = 1").fetchone()
-        assert post["title"] == "updated"
+        recipe = db.execute("SELECT * FROM recipe WHERE id = 1").fetchone()
+        assert recipe["title"] == "updated"
 
 
 @pytest.mark.parametrize("path", ("search/create", "search/1/update"))
@@ -79,5 +79,5 @@ def test_delete(client, auth, app):
 
     with app.app_context():
         db = get_db()
-        post = db.execute("SELECT * FROM post WHERE id = 1").fetchone()
-        assert post is None
+        recipe = db.execute("SELECT * FROM recipe WHERE id = 1").fetchone()
+        assert recipe is None
