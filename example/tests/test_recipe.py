@@ -4,19 +4,19 @@ from flaskr.db import get_db
 
 
 def test_index(client, auth):
-    response = client.get("blog/index")
+    response = client.get("search/index")
     assert b"Log In" in response.data
     assert b"Register" in response.data
 
     auth.login()
-    response = client.get("blog/index")
+    response = client.get("search/index")
     assert b"test title" in response.data
     assert b"by test on 2018-01-01" in response.data
     assert b"test\nbody" in response.data
-    assert b'href="/blog/1/update"' in response.data
+    assert b'href="/search/1/update"' in response.data
 
 
-@pytest.mark.parametrize("path", ("blog/create", "blog/1/update", "blog/1/delete"))
+@pytest.mark.parametrize("path", ("search/create", "search/1/update", "search/1/delete"))
 def test_login_required(client, path):
     response = client.post(path)
     assert response.headers["Location"] == "http://localhost/auth/login"
@@ -31,13 +31,13 @@ def test_author_required(app, client, auth):
 
     auth.login()
     # current user can't modify other user's post
-    assert client.post("blog/1/update").status_code == 403
-    assert client.post("blog/1/delete").status_code == 403
+    assert client.post("search/1/update").status_code == 403
+    assert client.post("search/1/delete").status_code == 403
     # current user doesn't see edit link
-    assert b'href="/blog/1/update"' not in client.get("blog/index").data
+    assert b'href="/search/1/update"' not in client.get("search/index").data
 
 
-@pytest.mark.parametrize("path", ("blog/2/update", "blog/2/delete"))
+@pytest.mark.parametrize("path", ("search/2/update", "search/2/delete"))
 def test_exists_required(client, auth, path):
     auth.login()
     assert client.post(path).status_code == 404
@@ -45,8 +45,8 @@ def test_exists_required(client, auth, path):
 
 def test_create(client, auth, app):
     auth.login()
-    assert client.get("blog/create").status_code == 200
-    client.post("blog/create", data={"title": "created", "body": ""})
+    assert client.get("search/create").status_code == 200
+    client.post("search/create", data={"title": "created", "body": ""})
 
     with app.app_context():
         db = get_db()
@@ -56,8 +56,8 @@ def test_create(client, auth, app):
 
 def test_update(client, auth, app):
     auth.login()
-    assert client.get("blog/1/update").status_code == 200
-    client.post("blog/1/update", data={"title": "updated", "body": ""})
+    assert client.get("search/1/update").status_code == 200
+    client.post("search/1/update", data={"title": "updated", "body": ""})
 
     with app.app_context():
         db = get_db()
@@ -65,7 +65,7 @@ def test_update(client, auth, app):
         assert post["title"] == "updated"
 
 
-@pytest.mark.parametrize("path", ("blog/create", "blog/1/update"))
+@pytest.mark.parametrize("path", ("search/create", "search/1/update"))
 def test_create_update_validate(client, auth, path):
     auth.login()
     response = client.post(path, data={"title": "", "body": ""})
@@ -74,7 +74,7 @@ def test_create_update_validate(client, auth, path):
 
 def test_delete(client, auth, app):
     auth.login()
-    response = client.post("blog/1/delete")
+    response = client.post("search/1/delete")
     assert response.headers["Location"] == "http://localhost/blog/index"
 
     with app.app_context():
