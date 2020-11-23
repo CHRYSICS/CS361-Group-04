@@ -97,8 +97,6 @@ def get_recipe_ingredients(id):
 def create():
     """Create a new recipe for the current user."""
     if request.method == "POST":
-        if g.user is None:
-            return render_template("guest/accessError.html")
         title = request.form["title"]
         body = request.form["body"]
         recipe_category = request.form["category"]
@@ -114,11 +112,18 @@ def create():
             flash(error)
         else:
             db = get_db()
-            db.execute(
-                "INSERT INTO recipe (author_id, category_id, title, body) VALUES (?, ?, ?, ?)",
-                (g.user["id"], recipe_category, title, body),
-            )
-            db.commit()
+            if g.user is None:
+                db.execute(
+                    "INSERT INTO recipe (author_id, category_id, title, body) VALUES (?, ?, ?, ?)",
+                    (1, recipe_category, title, body),
+                )
+                db.commit()
+            else:
+                db.execute(
+                    "INSERT INTO recipe (author_id, category_id, title, body) VALUES (?, ?, ?, ?)",
+                    (g.user["id"], recipe_category, title, body),
+                )
+                db.commit()
             return redirect(url_for("recipe.index"))
 
     return render_template("recipe/create.html")

@@ -15,6 +15,9 @@ CREATE TABLE "user" (
   password TEXT NOT NULL
 );
 
+-- Insert 'guest' user in order to use it for creating new recipes for users without an account
+INSERT INTO user (username, password) VALUES ('guest', random());
+
 CREATE TABLE ingredient_cat (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT UNIQUE NOT NULL
