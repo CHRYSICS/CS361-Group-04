@@ -11,18 +11,26 @@
   <input name="search" id="search" value="{{ request.form['search'] }}">
   <label for="filter">Filter</label>
   <div>
-  <input type = "radio"
+    <select name = "category">
+      <option value = "NULL">--Select Category--</option>
+      <option value = "Breakfast">Breakfast</option>
+      <option value = "Lunch">Lunch</option>
+      <option value = "Dinner">Dinner</option>
+      <option value = "Side">Side</option>
+      <option value = "Dessert">Dessert</option>
+    </select>
+    <input type = "radio"
         name = "filter"
         id = "title"
         value = "title"
-        checked = "checked" />
+        checked = "checked"/>
         <label for="title">By title</label>
-  <input type = "radio"
-      name = "filter"
-      id = "category"
-      value = "category" />
-      <label for="category">By category</label>
-  <input type = "radio"
+    <input type = "radio"
+        name = "filter"
+        id = "content"
+        value = "body"/>
+        <label for="title">By content</label>
+    <input type = "radio"
         name = "filter"
         id = "username"
         value = "username"/>

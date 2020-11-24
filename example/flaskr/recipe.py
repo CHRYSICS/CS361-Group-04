@@ -15,32 +15,20 @@ bp = Blueprint("recipe", __name__, url_prefix="/recipe")
 
 @bp.route("/index", methods=("GET", "POST"))
 def index():
-    """Show all the recipes, most recent first."""
+    """Shows all recipes, POST method filters recipes shown, ordered most recent first."""
     db = get_db()
-
-    # if a search query was done, list only recipes that match search and filter provided
+    sqlQuery = "SELECT * FROM recipe r " \
+                    "JOIN user u ON r.author_id = u.id JOIN recipe_cat rc ON r.category_id = rc.id "
+    
     if request.method == "POST":
-        searchQuery = "SELECT r.id, r.category_id, title, body, created, author_id, username FROM recipe r" \
-                      " JOIN user u ON r.author_id = u.id JOIN recipe_cat rc ON r.category_id = rc.id" \
-                      " WHERE " + request.form["filter"] + " LIKE '%" \
-                      + request.form["search"] + "%' ORDER BY created DESC"
+        sqlQuery += "WHERE " + request.form["filter"] + " LIKE '%" + request.form["search"] + "%' " 
 
-        # Need to modify the query to account for recipe category
-        if request.form["filter"] == "category":
-            searchQuery = "SELECT r.id, r.category_id, title, body, created, author_id, username FROM recipe r" \
-                          " JOIN user u ON r.author_id = u.id JOIN recipe_cat rc ON r.category_id = rc.id" \
-                          " WHERE rc.name LIKE '%" + request.form["search"] + "%' ORDER BY created DESC"
+        if request.form["category"] != 'NULL':
+            sqlQuery += "AND rc.name = '" + request.form["category"] + "' "
+    
+    sqlQuery += "ORDER BY created DESC"
 
-        recipes = db.execute(searchQuery).fetchall()
-
-    # else list all recipes in database
-    else:
-        recipes = db.execute(
-            "SELECT r.id, title, body, created, author_id, username"
-            " FROM recipe r JOIN user u ON r.author_id = u.id"
-            " ORDER BY created DESC"
-        ).fetchall()
-
+    recipes = db.execute(sqlQuery).fetchall()
     return render_template("recipe/index.html", recipes=recipes)
 
 
