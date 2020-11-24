@@ -7,16 +7,6 @@
 {% block content %}
 
 {% for ingredient in ingredients %}
-<style>
-    .badingredient {
-        background: rgba(250,0,0,.57);
-        background: linear-gradient(0deg, rgba(255,0,0,0.5669000021883753) 0%, rgba(255,0,0,0) 100%);
-    }
-    .goodingredient {
-        background: rgba(0, 255,67,.57);
-        background: linear-gradient(0deg, rgba(0,255,67,0.5669000021883753) 0%, rgba(0,255,67,0) 100%);
-    }
-</style>
 <article class="post">
     <header>
         <div>
@@ -45,9 +35,9 @@
                     var valueString = document.getElementById("value" + (i) + ""); 
                     //If (the number at the end of the string) is greater or less than value, highlights.
                     if (Number(valueString.innerHTML.substr(valueString.innerHTML.length - 3, valueString.innerHTML.length)) <= 2.5) {
-                        valueString.classList.add("badingredient");
+                        valueString.classList.add("bad-rating");
                     } else if (Number(valueString.innerHTML.substr(valueString.innerHTML.length - 3, valueString.innerHTML.length)) >= 4.0) {
-                        valueString.classList.add("goodingredient");
+                        valueString.classList.add("good-rating");
                     }
                 }
             }
