@@ -26,19 +26,14 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    @app.route("/hello")
-    def hello():
-        return "Hello, World!"
-
     # register the database commands
     from flaskr import db
 
     db.init_app(app)
 
     # apply the blueprints to the app
-    from flaskr import auth, guest, ingredient, recipe
+    from flaskr import auth, ingredient, recipe
 
-    app.register_blueprint(guest.bp)
     app.register_blueprint(auth.bp)
     app.register_blueprint(ingredient.bp)
     app.register_blueprint(recipe.bp)
@@ -46,6 +41,6 @@ def create_app(test_config=None):
     # Before navigating to the content of this application,
     # direct user to portal.  This gives user the option 
     # to explore the application as either guest or user.
-    app.add_url_rule("/", endpoint="portal")
+    app.add_url_rule("/", endpoint="auth")
 
     return app
