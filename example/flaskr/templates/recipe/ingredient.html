@@ -1,52 +1,50 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<h1>{% block title %}Ingredients{% endblock %}</h1>
+<h1>{% block title %}Ingredient Alternatives{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
+{% set ratings = [ 'r_nourishment', 'r_value', 'r_human_welfare',
+'r_animal_welfare', 'r_resource_cons', 'r_biodiversity','r_global_warming'] %}
+{% set badCutoff, goodCutoff = 2.5, 4.0 %}
 
-{% for ingredient in ingredients %}
 <article class="post">
     <header>
         <div>
-            <h1>{{ ingredient['name'] }}</h1>
+            <h1>Alternatives for {{ ingredient['name'] }}</h1>
         </div>
     </header>
-    <p class="body">
-        <h2>Ethical Ratings for {{ ingredient['name']}} </h2>
-        <ul id="ratings-list">
-            <li><span id="value1">Nourishment: {{ ingredient['r_nourishment']}}</span></li>
-            <li><span id="value2">Value: {{ ingredient['r_value']}}</span></li>
-            <li><span id="value3">Human Welfare: {{ ingredient['r_human_welfare']}}</span></li>
-            <li><span id="value4">Animal Welfare: {{ ingredient['r_animal_welfare']}}</span></li>
-            <li><span id="value5">Resource Conservation: {{ ingredient['r_resource_cons']}}</span></li>
-            <li><span id="value6">Biodiversity: {{ ingredient['r_biodiversity']}}</span></li>
-            <li><span id="value7">Global Warming: {{ ingredient['r_global_warming']}}</span></li>
-            <li><span id="value8">Average Ethical Rating: {{ ingredient['r_avg']}}</span></li>
-        </ul>
-        <script>
-            //Highlights all negative elements (<= 2.5) in red gradient, good elements (>= 4.0) in green.
-            function ratingStyle() {
-                var ratingsList = document.getElementById("ratings-list");
-                
-                for (var i = 1; i <= 8; i++) {
-                    //Retrieves id of "value(number)"
-                    var valueString = document.getElementById("value" + (i) + ""); 
-                    //If (the number at the end of the string) is greater or less than value, highlights.
-                    if (Number(valueString.innerHTML.substr(valueString.innerHTML.length - 3, valueString.innerHTML.length)) <= 2.5) {
-                        valueString.classList.add("bad-rating");
-                    } else if (Number(valueString.innerHTML.substr(valueString.innerHTML.length - 3, valueString.innerHTML.length)) >= 4.0) {
-                        valueString.classList.add("good-rating");
-                    }
-                }
-            }
-            window.onload = ratingStyle;
-        </script>
-    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Ingredient</th>
+                <th>Image</th>
+                <th>Pros</th>
+                <th>Cons</th>  
+            </tr>
+        </thead>
+        {% for alt in alts %}
+        <tr>
+            <td>{{ alt['name'] }}</td>
+            <td> IMAGE PLACEHOLDER </td>
+            <td class="alt-pros">
+                {% for rating in ratings %}
+                {% if alt[rating] > goodCutoff %}
+                <span class="good-rating"> {{rating}}: {{ alt[rating] }}</span>
+                {% endif %}
+                {% endfor %}
+            </td>
+            <td class="alt-cons">
+                {% for rating in ratings %}
+                {% if alt[rating] < badCutoff %}
+                <span class="bad-rating"> {{rating}}: {{ alt[rating] }}</span>
+                {% endif %}
+                {% endfor %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
 </article>
-{% if not loop.last %}
-<hr>
-{% endif %}
-{% endfor %}
 {% endblock %}
