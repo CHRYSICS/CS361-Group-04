@@ -34,17 +34,17 @@ def getIngredient(ingredientName):
     if not ingredientName:
         error = "Ingredient name is required."
     else:
-        ingredient = db.execute(
-            "SELECT  id, category_id, \
-                (r_nourishment + r_value + r_human_welfare + r_animal_welfare + \
-                r_resource_cons + r_biodiversity + r_global_warming)/7 as r_avg \
-                FROM ingredient WHERE name = ?", (ingredientName,)).fetchone()
+        ingredient = ingredientQuery(ingredientName, db)
     
     if ingredient is None:
         abort(404, f"Ingredient with name {ingredientName} doesn't exist.")
 
     return render_template("recipe/ingredient.html", ingredients = [ingredient])
 
+def ingredientQuery(ingredientName, db):
+    """ Retrieves an Ingredient by name. Returns the row associated with the ingredient
+    """
+    return db.execute("SELECT * FROM ingredient WHERE name = ?",(ingredientName,)).fetchone()
 
 @bp.route("/<ingredientName>/alt")
 def getAlternatives(ingredientName):
@@ -83,7 +83,7 @@ def getAlternativesByRating(ingredientName, ratingName):
     if not ingredientName:
         error = "Ingredient name is required."
     else:
-        ingredient = db.execute("SELECT * FROM ingredient WHERE name = ?", (ingredientName,)).fetchone()
+        ingredient = ingredientQuery(db, ingredientName)
         equiv = db.execute(
             "SELECT * FROM ingredient WHERE category_id= \
             (SELECT category_id FROM ingredient WHERE name = ?)",  

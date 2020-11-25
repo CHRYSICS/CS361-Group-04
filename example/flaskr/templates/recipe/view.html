@@ -19,6 +19,7 @@
         </div>
         {% if g.user['id'] == recipe['author_id'] %}
         <a class="action" href="{{ url_for('recipe.update', id=recipe['id']) }}">Edit</a>
+        <a class="action" href="{{ url_for('recipe.update', id=recipe['id']) }}">Save to Recipe Book</a>
         {% endif %}
     </header>
     <p class="body">{{ recipe['body'] }}</p>
@@ -41,14 +42,14 @@
             <td> IMAGE PLACEHOLDER </td>
             <td class="ingredient-pros">
                 {% for rating in ratings %}
-                    {% if ingredient[rating] >= goodCutoff %}
+                    {% if ingredient[rating] > goodCutoff %}
                     <span class="good-rating"> {{rating}}: {{ ingredient[rating] }}</span>
                     {% endif %}
                 {% endfor %}
             </td>
             <td class="ingredient-cons">
                 {% for rating in ratings %}
-                    {% if ingredient[rating] <= badCutoff %}
+                    {% if ingredient[rating] < badCutoff %}
                     <span class="bad-rating"> {{rating}}: {{ ingredient[rating] }}</span>
                     {% endif %}
                 {% endfor %}
