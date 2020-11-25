@@ -125,8 +125,12 @@ def create():
                 )
                 db.commit()
             return redirect(url_for("recipe.index"))
+    # method is a GET, return the create page with associated context
+    db = get_db()
+    categories = db.execute("SELECT DISTINCT id, name FROM recipe_cat")
+    ingredients = db.execute("SELECT DISTINCT id, name FROM ingredient")
 
-    return render_template("recipe/create.html")
+    return render_template("recipe/create.html", categories = categories, ingredients = ingredients)
 
 
 @bp.route("/<int:id>/update", methods=("GET", "POST"))
