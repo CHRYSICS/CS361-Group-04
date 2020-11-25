@@ -12,7 +12,7 @@ from flaskr.db import get_db
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 
-bp = Blueprint("auth", __name__, url_prefix="/auth")
+bp = Blueprint("auth", __name__)
 
 
 def login_required(view):
@@ -21,7 +21,7 @@ def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
-            return redirect(url_for("guest.accessError"))
+            return redirect(url_for("auth.accessError"))
 
         return view(**kwargs)
 
@@ -40,6 +40,14 @@ def load_logged_in_user():
         g.user = (
             get_db().execute("SELECT * FROM user WHERE id = ?", (user_id,)).fetchone()
         )
+
+@bp.route("/")
+def arrival():
+    """Arrival route that either renders portal for non-users or redirects to index"""
+    if g.user is None:
+        return render_template("auth/portal.html")
+    else:
+        return redirect(url_for("recipe.index"))
 
 
 @bp.route("/register", methods=("GET", "POST"))
@@ -108,7 +116,7 @@ def login():
             # store the user id in a new session and return to the index
             session.clear()
             session["user_id"] = user["id"]
-            return redirect(url_for("blog.index"))
+            return redirect(url_for("recipe.index"))
 
         flash(error, "error")
 
@@ -124,3 +132,8 @@ def logout():
     """Clear the current session, including the stored user id."""
     session.clear()
     return redirect(url_for("portal"))
+
+@bp.route("/guestRestricted")
+def accessError():
+    """Redirect Route for guest restriction on application"""
+    return render_template("auth/accessError.html")

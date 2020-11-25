@@ -1,34 +1,50 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<h1>{% block title %}Ingredients{% endblock %}</h1>
+<h1>{% block title %}Ingredient Alternatives{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
+{% set ratings = [ 'r_nourishment', 'r_value', 'r_human_welfare',
+'r_animal_welfare', 'r_resource_cons', 'r_biodiversity','r_global_warming'] %}
+{% set badCutoff, goodCutoff = 2.5, 4.0 %}
 
-{% for ingredient in ingredients %}
 <article class="post">
     <header>
         <div>
-            <h1>{{ ingredient['name'] }}</h1>
+            <h1>Alternatives for {{ ingredient['name'] }}</h1>
         </div>
     </header>
-    <p class="body">
-        <h2>Ethical Ratings for {{ ingredient['name']}} </h2>
-        <ul> 
-            <li>Nourishment: {{ ingredient['r_nourishment']}} </li>
-            <li>Value: {{ ingredient['r_value']}} </li>
-            <li>Human Welfare: {{ ingredient['r_human_welfare']}} </li>
-            <li>Animal Welfare: {{ ingredient['r_animal_welfare']}} </li>
-            <li>Resource Conservation: {{ ingredient['r_resource_cons']}} </li>
-            <li>Biodiversity: {{ ingredient['r_biodiversity']}} </li>
-            <li>Global Warming: {{ ingredient['r_global_warming']}} </li>
-            <li>Average Ethical Rating: {{ ingredient['r_avg']}} </li>
-        </ul>
-    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Ingredient</th>
+                <th>Image</th>
+                <th>Pros</th>
+                <th>Cons</th>  
+            </tr>
+        </thead>
+        {% for alt in alts %}
+        <tr>
+            <td>{{ alt['name'] }}</td>
+            <td> IMAGE PLACEHOLDER </td>
+            <td class="alt-pros">
+                {% for rating in ratings %}
+                {% if alt[rating] > goodCutoff %}
+                <span class="good-rating"> {{rating}}: {{ alt[rating] }}</span>
+                {% endif %}
+                {% endfor %}
+            </td>
+            <td class="alt-cons">
+                {% for rating in ratings %}
+                {% if alt[rating] < badCutoff %}
+                <span class="bad-rating"> {{rating}}: {{ alt[rating] }}</span>
+                {% endif %}
+                {% endfor %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
 </article>
-{% if not loop.last %}
-<hr>
-{% endif %}
-{% endfor %}
 {% endblock %}

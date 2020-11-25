@@ -17,3 +17,6 @@
 - When referring to code, provide a direct link to the code block where possible. 
 - Use code suggestions as a part of your review where appropriate. 
 - If you are tagged to review a PR, __complete the review within 2 days__, or let the author know ASAP you cannot review it within 2 days.
+
+Note for implementation: 
+Project exists inside the the "example" folder.  In there, the README will provide instructions for how to run the application.  The application setup described in the example/README is done inside the "example" folder (CWD for setup is "example").

@@ -8,6 +8,9 @@
 {% endblock %}
 
 {% block content %}
+{% set ratings = [ 'r_nourishment', 'r_value', 'r_human_welfare',
+'r_animal_welfare', 'r_resource_cons', 'r_biodiversity','r_global_warming'] %}
+{% set badCutoff, goodCutoff = 2.5, 4.0 %}
 <article class="post">
     <header>
         <div>
@@ -16,33 +19,45 @@
         </div>
         {% if g.user['id'] == recipe['author_id'] %}
         <a class="action" href="{{ url_for('recipe.update', id=recipe['id']) }}">Edit</a>
+        <a class="action" href="{{ url_for('recipe.update', id=recipe['id']) }}">Save to Recipe Book</a>
         {% endif %}
     </header>
     <p class="body">{{ recipe['body'] }}</p>
-    <ul>
+    <table>
+        <thead>
+            <tr>
+                <th>Ingredient</th>
+                <th>Amount</th>
+                <th>Image</th>
+                <th>Pros</th>
+                <th>Cons</th>
+                <th>Other Choices</th>
+
+            </tr>
+        </thead>
         {% for ingredient in ingredients %}
-        <li>
-            <h2>{{ingredient['name']}}, {{ ingredient['amount'] }} {{ ingredient['unit']}} </h2>
-            You
-            <ul>
-                <li> Nourishment: {{ingredient['r_nourishment']}}</li>
-                <li> Value: {{ingredient['r_value']}}</li>
-            </ul>
-            Others
-            <ul>
-                <li> Human Welfare: {{ingredient['r_human_welfare']}}</li>
-                <li> Animal Welfare: {{ingredient['r_animal_welfare']}}</li>
-            </ul>
-            Planet
-            <ul>                
-                <li> Resource Conservation: {{ingredient['r_resource_cons']}}</li>
-                <li> Biodiversity: {{ingredient['r_biodiversity']}}</li>
-                <li> Global Warming: {{ingredient['r_global_warming']}}</li>
-            </ul>
-            <br><br>
-        </li>
+        <tr>
+            <td>{{ ingredient['name'] }}</td>
+            <td>{{ ingredient['amount'] }} {{ ingredient['unit'] }}</td>
+            <td> IMAGE PLACEHOLDER </td>
+            <td class="ingredient-pros">
+                {% for rating in ratings %}
+                    {% if ingredient[rating] > goodCutoff %}
+                    <span class="good-rating"> {{rating}}: {{ ingredient[rating] }}</span>
+                    {% endif %}
+                {% endfor %}
+            </td>
+            <td class="ingredient-cons">
+                {% for rating in ratings %}
+                    {% if ingredient[rating] < badCutoff %}
+                    <span class="bad-rating"> {{rating}}: {{ ingredient[rating] }}</span>
+                    {% endif %}
+                {% endfor %}
+            </td>
+        </tr>
         {% endfor %}
-    </ul>
+
+    </table>
 </article>
 <hr>
 {% endblock %}

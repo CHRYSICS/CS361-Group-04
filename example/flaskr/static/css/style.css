@@ -83,27 +83,27 @@ nav ul li a, nav ul li span, header .action {
   border: 1px solid #a83737;
 }
 
-.post > header {
+.recipe > header {
   display: flex;
   align-items: flex-end;
   font-size: 0.85em;
 }
 
-.post > header > div:first-of-type {
+.recipe > header > div:first-of-type {
   flex: auto;
 }
 
-.post > header h1 {
+.recipe > header h1 {
   font-size: 1.5em;
   margin-bottom: 0;
 }
 
-.post .about {
+.recipe .about {
   color: slategray;
   font-style: italic;
 }
 
-.post .body {
+.recipe .body {
   white-space: pre-line;
 }
 
@@ -162,4 +162,14 @@ input[type=submit] {
   position: relative;
   left: -5px;
   content: "✖";
+}
+
+.bad-rating {
+  background: rgba(250,0,0,.57);
+  background: linear-gradient(0deg, rgba(255,0,0,0.5669000021883753) 0%, rgba(255,0,0,0) 100%);
+}
+
+.good-rating {
+  background: rgba(0, 255,67,.57);
+  background: linear-gradient(0deg, rgba(0,255,67,0.5669000021883753) 0%, rgba(0,255,67,0) 100%);
 }
