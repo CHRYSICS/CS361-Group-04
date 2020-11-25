@@ -12,13 +12,15 @@
     <textarea name="body" id="body">{{ request.form['body'] }}</textarea>
     <label for="category">Recipe Category</label>
     <select id="category" name="category">
-      <option value="1">Breakfast</option>
-      <option value="2">Lunch</option>
-      <option value="3">Dinner</option>
-      <option value="4">Side</option>
-      <option value="5">Dessert</option>
+      {% for category in categories %}
+      <option value={{ category['id'] }}>{{ category['name'] }}</option>
+      {% endfor %}
     </select>
     <h2>Enter Ingredients</h2>
+    {% for ingredient in ingredients %}
+    <span>Id: {{ ingredient['id'] }} Name: {{ ingredient['name'] }} </span>
+    {% endfor %}
+
     <button type="button" id="addButton" onclick="createIngInput(event)">Add Ingredient</button>
     <br id="listFooter">
     <input type="submit" value="Save">
