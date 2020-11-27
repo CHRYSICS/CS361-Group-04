@@ -5,6 +5,8 @@ from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
+from flask import send_from_directory
+
 from werkzeug.exceptions import abort
 
 from flaskr.auth import login_required
@@ -42,6 +44,10 @@ def view_recipe(id):
     ingredients = get_recipe_ingredients(id)
     return render_template("recipe/view.html", recipe=recipe, ingredients=ingredients)
 
+@bp.route("/<int:id>/static/<path:path>")
+def static_dir(id, path):
+    return send_from_directory("static", path)
+
 
 def get_recipe(id):
     recipe = (
@@ -65,14 +71,14 @@ def get_recipe(id):
 
     return recipe
 
-
 def get_recipe_ingredients(id):
     """Get a list of ingredients in a Recipe querying the database by recipe id."""
     recipe = get_recipe(id)
     ingredients = (
         get_db()
             .execute(
-            "SELECT * FROM recipe_ingredient ri \
+            "SELECT *\
+            FROM recipe_ingredient ri \
             JOIN ingredient i ON i.id=ingredient_id \
             WHERE recipe_id= ?",
             (id,)
@@ -80,20 +86,37 @@ def get_recipe_ingredients(id):
     )
     return ingredients
 
+def get_ingredients_data(id):
+    """Get a list of ingredients in a Recipe querying the database by recipe id."""
+    recipe = get_recipe(id)
+    ingredients = (
+        get_db()
+            .execute(
+            "SELECT * FROM ingredient WHERE id IN \
+            (SELECT ingredient_id\
+            FROM recipe_ingredient ri \
+            JOIN ingredient i ON i.id=ingredient_id \
+            WHERE recipe_id= ?)",
+            (id,)
+        )
+    )
+    return ingredients
+
 def get_recipe_alts(id):
+    """Get a list of ingredients in a Recipe querying the database by recipe id."""
     recipe = get_recipe(id)
     alts = (
         get_db()
             .execute(
-            "SELECT * FROM ingredient WHERE category_id in \
-            (SELECT category_id FROM recipe_ingredient ri\
+            "SELECT * FROM ingredient WHERE category_id IN \
+            (SELECT category_id \
+            FROM recipe_ingredient ri \
             JOIN ingredient i ON i.id=ingredient_id \
             WHERE recipe_id= ?)",
             (id,)
         )
     )
     return alts
-
 
 @bp.route("/create", methods=("GET", "POST"))
 def create():
@@ -139,7 +162,7 @@ def create():
 def update(id):
     """Update a recipe if the current user is the author."""
     post = get_recipe(id)
-    ingredients = get_recipe_ingredients(id)
+    ingredients = get_ingredients_data(id)
     alts = get_recipe_alts(id)
     if request.method == "POST":
         title = request.form["title"]
@@ -148,9 +171,10 @@ def update(id):
 
         if not title:
             error = "Title is required."
-
+        if g.user is None:
+            error = "Must Be a User to Save to Recipe Book"
         if error is not None:
-            flash(error)
+            flash(error, "error")
         else:
             db = get_db()
             db.execute(

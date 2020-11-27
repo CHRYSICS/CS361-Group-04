@@ -1,14 +1,12 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<h1>{% block title %}Step 1: Select Common Recipe{% endblock %}</h1>
-
-<a class="action" href="{{ url_for('recipe.update', id=recipe['id']) }}">STEP 2: CHOOSE ETHICAL INGREDIENTS</a>
-
+    <h1>{% block title %}Step 1: Select Common Recipe{% endblock %}</h1>
+    <a class="action" href="{{ url_for('recipe.update', id=recipe['id']) }}">Step 2: Check For Ethical Options</a>
 {% endblock %}
 
 {% block content %}
-<article class="post">
+<article class="recipe">
     <header>
         <div>
             <h1>{{ recipe['title'] }}</h1>
@@ -16,24 +14,24 @@
         </div>
     </header>
     <p class="body">{{ recipe['body'] }}</p>
-    <h4>Current Ingredients</h4>
+    <h4>Current Ingredients:</h4>
     <table>
-        <thead>
-            <tr>
-                <th>Ingredient</th>
-                <th>Amount</th>
-                <th>Image</th>
-            </tr>
-        </thead>
-        {% for ingredient in ingredients %}
+    <thead>
         <tr>
-            <td>{{ ingredient['name'] }}</td>
-            <td>{{ ingredient['amount'] }} {{ ingredient['unit'] }}</td>
-            <td> IMAGE PLACEHOLDER </td>
+            <th>Ingredient</th>
+            <th>Amount</th>
+            <th>Image</th>
         </tr>
-        {% endfor %}
+    </thead>
+    {% for ingredient in ingredients %}
+    <tr>
+        <td>{{ ingredient['name'] }}</td>
+        <td>{{ ingredient['amount'] }} {{ ingredient['unit'] }}</td>
+        <td> IMAGE PLACEHOLDER </td>
+    </tr>
+    {% endfor %}
 
-    </table>
+</table>
 </article>
 <hr>
 {% endblock %}
