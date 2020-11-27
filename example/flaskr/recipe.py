@@ -9,6 +9,9 @@ from werkzeug.exceptions import abort
 
 from flaskr.auth import login_required
 from flaskr.db import get_db
+from flaskr.ingredient import getAlternativesByRatingAvg, getAlternatives
+import time
+import sqlite3
 
 bp = Blueprint("recipe", __name__, url_prefix="/recipe")
 
@@ -69,16 +72,27 @@ def get_recipe_ingredients(id):
     ingredients = (
         get_db()
             .execute(
-            "SELECT recipe_id, ingredient_id, amount, unit, name, category_id \
-            r_nourishment, r_value, r_human_welfare, r_animal_welfare,   \
-            r_resource_cons, r_biodiversity, r_global_warming\
-            FROM recipe_ingredient ri \
+            "SELECT * FROM recipe_ingredient ri \
             JOIN ingredient i ON i.id=ingredient_id \
             WHERE recipe_id= ?",
             (id,)
         )
     )
     return ingredients
+
+def get_recipe_alts(id):
+    recipe = get_recipe(id)
+    alts = (
+        get_db()
+            .execute(
+            "SELECT * FROM ingredient WHERE category_id in \
+            (SELECT category_id FROM recipe_ingredient ri\
+            JOIN ingredient i ON i.id=ingredient_id \
+            WHERE recipe_id= ?)",
+            (id,)
+        )
+    )
+    return alts
 
 
 @bp.route("/create", methods=("GET", "POST"))
@@ -122,11 +136,11 @@ def create():
 
 
 @bp.route("/<int:id>/update", methods=("GET", "POST"))
-@login_required
 def update(id):
     """Update a recipe if the current user is the author."""
     post = get_recipe(id)
-
+    ingredients = get_recipe_ingredients(id)
+    alts = get_recipe_alts(id)
     if request.method == "POST":
         title = request.form["title"]
         body = request.form["body"]
@@ -145,7 +159,7 @@ def update(id):
             db.commit()
             return redirect(url_for("recipe.index"))
 
-    return render_template("recipe/update.html", post=post)
+    return render_template("recipe/update.html", post=post, ingredients = ingredients, alts = alts)
 
 
 @bp.route("/<int:id>/delete", methods=("POST",))
