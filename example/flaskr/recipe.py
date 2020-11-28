@@ -162,6 +162,7 @@ def create():
 def update(id):
     """Update a recipe if the current user is the author."""
     post = get_recipe(id)
+    recipe_ingredients = get_recipe_ingredients(id)
     ingredients = get_ingredients_data(id)
     alts = get_recipe_alts(id)
     if request.method == "POST":
@@ -183,7 +184,7 @@ def update(id):
             db.commit()
             return redirect(url_for("recipe.index"))
 
-    return render_template("recipe/update.html", post=post, ingredients = ingredients, alts = alts)
+    return render_template("recipe/update.html", post=post, ingredients = ingredients, alts = alts, recipe_ingredients = recipe_ingredients)
 
 
 @bp.route("/<int:id>/delete", methods=("POST",))

@@ -90,18 +90,25 @@ for(category in categories){
     } 
 }
 
+// console log the working data from template
+console.log(JSON.parse(ingredients));
+console.log(JSON.parse(alts));
+
 // update ratings
 calcSubRatings(ingredients);
 calcCategoryRatings();
 
-console.log(JSON.parse(ingredients));
-console.log(JSON.parse(alts));
+
 
 function calcSubRatings(rating_dict){
     // Assign avg rating for each subcategory
     var dict = JSON.parse(rating_dict);
+    var notRatings = ["recipe_id", "category_id", "amount", "unit"];
     for(ingredient in dict){
         for(rating in dict[ingredient]){
+            if(notRatings.indexOf(rating) !== -1){
+                continue;
+            }
             tableRating = document.getElementById(rating);
             rating = dict[ingredient][rating] / (Object.keys(dict).length);
             newRating = Math.round((parseFloat(tableRating.innerHTML) + rating) * 100)/100;

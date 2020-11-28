@@ -7,16 +7,26 @@
 {% block content %}
 {% set ratings = [ 'r_nourishment', 'r_value', 'r_human_welfare',
 'r_animal_welfare', 'r_resource_cons', 'r_biodiversity','r_global_warming'] %}
-{% set ingredient_ratings = dict() %}
+
 {% set alts_info = dict() %}
 {% for alt in alts %}
   {% set alternative = alts_info.update( {alt['name']: dict()} ) %}
   {% set id = alts_info[alt['name']].update({"id": alt['id']})%}
-  {% set cat = alts_info[alt['name']].update({"cat": alt['category_id']})%}
+  {% set cat = alts_info[alt['name']].update({"category_id": alt['category_id']})%}
   {% for rating in ratings %}
     {% set r = alts_info[alt['name']].update({rating: alt[rating]})%}
   {% endfor %}
 {% endfor %}
+
+{% set list = dict() %}
+{% for item in recipe_ingredients %}
+  {% set i = list.update( {item['name']: dict()}) %}
+  {% set recipe_id = list[item['name']].update( {"recipe_id": item['recipe_id']}) %}
+  {% set id = list[item['name']].update( {"ingredient_id": item['ingredient_id']}) %}
+  {% set amount = list[item['name']].update( {"amount": item['amount']}) %}
+  {% set unit = list[item['name']].update( {"unit": item['unit']}) %}
+{% endfor %}
+
 {% set badCutoff, goodCutoff = 2.5, 4.0 %}
 <h1 id="title"> {{ post['title'] }}</h1> 
 
@@ -33,31 +43,33 @@
   
           </tr>
       </thead>
-      {% for ingredient in ingredients %}
-        {%  set i = ingredient_ratings.update( {ingredient['name']: dict()}) %}
-      <tr>
-          <td>{{ ingredient['name'] }}</td>
-          <td>{{ ingredient['amount'] }} {{ ingredient['unit'] }}</td>
+      {% for item in list %}
+        <tr>
+          <td>{{ item }}</td>
+          <td>{{ list[item]['amount'] }} {{ list[item]['unit'] }}</td>
           <td> IMAGE PLACEHOLDER </td>
           <td class="ingredient-pros">
               {% for rating in ratings %}
-              {%  set r = ingredient_ratings[ingredient['name']].update( {rating: ingredient[rating]}) %}
-                  {% if ingredient[rating] > goodCutoff %}
-                  <span class="good-rating"> {{rating}}: {{ ingredient[rating] }}</span>
+                  {% if alts_info[item][rating] > goodCutoff %}
+                  <span class="good-rating"> {{rating}}: {{ alts_info[item][rating] }}</span>
                   {% endif %}
               {% endfor %}
           </td>
           <td class="ingredient-cons">
               {% for rating in ratings %}
-                  {% if ingredient[rating] < badCutoff %}
-                  <span class="bad-rating"> {{rating}}: {{ ingredient[rating] }}</span>
+                  {% if alts_info[item][rating] < badCutoff %}
+                  <span class="bad-rating"> {{rating}}: {{ alts_info[item][rating] }}</span>
                   {% endif %}
               {% endfor %}
           </td>
-          <td class="alts">
+          <td class="alts" id= "{{alts_info[item]['category_id']}}">
             {% for alt in alts_info %}
-              {% if ingredient['category_id'] == alts_info[alt]['cat'] %}
-                <p>{{alt}}</p>
+              {% if alts_info[item]['category_id'] == alts_info[alt]['category_id'] %}
+                {% if item == alt %}
+                  <p class='selected'>{{alt}}</p>
+                {% else %}
+                  <p class='unselected'>{{alt}}</p>
+                {% endif %}
               {% endif %}
             {% endfor %}
           </td>
@@ -70,7 +82,7 @@
   </form>
   
   <script>
-    var ingredients = '{{ ingredient_ratings | tojson }}';
+    var ingredients = '{{ list | tojson }}';
     var alts = '{{ alts_info |tojson }}';
   </script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/ratingTable.js') }}"></script>
