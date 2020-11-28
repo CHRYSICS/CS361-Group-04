@@ -31,7 +31,7 @@
 <h1 id="title"> {{ post['title'] }}</h1> 
 
 <form method="post">
-    <table>
+    <table id = "ingredient_table">
       <thead>
           <tr>
               <th>Ingredient</th>
@@ -44,9 +44,12 @@
           </tr>
       </thead>
       {% for item in list %}
-        <tr>
+        <tr class = "ingredient" id= "{{alts_info[item]['category_id']}}">
           <td>{{ item }}</td>
-          <td>{{ list[item]['amount'] }} {{ list[item]['unit'] }}</td>
+          <td  class="amount" abbr = "{{ list[item]['amount'] }} {{ list[item]['unit'] }}">{{ list[item]['amount'] }} {{ list[item]['unit'] }}
+            <button type="button" class="amount increase">&#x25B2</button>
+            <button type="button" class="amount decrease">&#x25BC</button>
+          </td>
           <td> IMAGE PLACEHOLDER </td>
           <td class="ingredient-pros">
               {% for rating in ratings %}
@@ -62,13 +65,13 @@
                   {% endif %}
               {% endfor %}
           </td>
-          <td class="alts" id= "{{alts_info[item]['category_id']}}">
+          <td class="alts">
             {% for alt in alts_info %}
               {% if alts_info[item]['category_id'] == alts_info[alt]['category_id'] %}
                 {% if item == alt %}
-                  <p class='selected'>{{alt}}</p>
+                  <p class='alts selected'>{{alt}}</p>
                 {% else %}
-                  <p class='unselected'>{{alt}}</p>
+                  <p class='alts unselected'>{{alt}}</p>
                 {% endif %}
               {% endif %}
             {% endfor %}

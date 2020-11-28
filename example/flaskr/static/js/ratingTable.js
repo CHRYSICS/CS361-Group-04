@@ -102,8 +102,6 @@ console.log(alts);
 calcSubRatings(ingredients, alts);
 calcCategoryRatings();
 
-
-
 function calcSubRatings(ingredients, alts){
     // Assign avg rating for each subcategory
     var notRatingValues = ["id", "category_id", "amount", "unit"];
@@ -180,3 +178,75 @@ function showTableBody(event) {
         clicktarget.innerHTML = '\u25BC';
     }
 }
+
+function changeAlts(currentTarget){
+    // Move to next alt by setting class to "selected" 
+    targets = currentTarget.querySelectorAll(".alts");
+    console.log(targets);
+    for(i = 1; i < targets.length; i++){
+        if(targets[i].classList.contains("selected")){
+            target = targets[i];
+            target.className = "alts unselected";
+            if(i == targets.length - 1){
+                nextTarget = targets[1];
+                nextTarget.className = "alts selected";
+            }else{
+                nextTarget = targets[i + 1];
+                nextTarget.className = "alts selected";
+            }
+            return;
+        }
+    }
+}
+
+function changeAmount(currentTarget, signal){
+    // Depending on signal, either increase or decrease amount by .1
+    target = currentTarget.querySelector(".amount");
+    inputs = target.innerHTML.split(" ");
+    returnInput = "";
+    if(signal === "increase"){
+        inputs[0] = Math.round((parseFloat(inputs[0]) + .1) * 100)/100;
+        for(i in inputs){
+            returnInput += inputs[i] + " ";
+        }
+        target.abbr = inputs[0] + " " + inputs[1];
+        target.innerHTML = returnInput;
+        console.log(target.abbr);
+    }
+    else if(signal === "decrease"){
+        inputs[0] = Math.round((parseFloat(inputs[0]) - .1) * 100)/100;
+        for(i in inputs){
+            returnInput += inputs[i] + " ";
+        }
+        target.abbr = inputs[0] + " " + inputs[1];
+        target.innerHTML = returnInput;
+    }else{return;}
+}
+
+function eventManager(event){
+    // handles events from ingredient table and call corresponding function
+    target = event.target;
+    curtarget = event.currentTarget;
+    classes = target.classList;
+    if(target.classList.contains("alts")){
+        changeAlts(curtarget);
+    }
+    else if(target.classList.contains("amount")){
+        if(classes.contains("increase")){
+            changeAmount(curtarget, "increase");
+        }else if(classes.contains("decrease")){
+            changeAmount(curtarget, "decrease");
+        }
+    }
+    else{return;}
+}
+
+function updateRecipe(event){
+    //console.log(event.currentTarget);
+}
+// add event listener to ingredient table
+//document.getElementById("ingredient_table").addEventListener("click", eventManager);
+document.querySelectorAll('.ingredient').forEach(item => {
+    item.addEventListener('click', eventManager);
+    item.addEventListener('click', updateRecipe);
+})
