@@ -15,6 +15,10 @@ var icons = {"YOU": "/static/img/icons8-customer-40.png",
     "PLANET": "/static/img/icons8-globe-40.png",
     "INFO": "/static/img/icons8-info-40.png"};
 
+// Parse incoming working data from flask update template
+var ingredients = JSON.parse(ingredients);
+var alts = JSON.parse(alts);
+
 // Create Profile Table for Ethical Ratings, added element with id "title"
 var title = document.getElementById("title");
 var profileTable = createTableStruct("profile", 3);
@@ -90,27 +94,26 @@ for(category in categories){
     } 
 }
 
-// console log the working data from template
-console.log(JSON.parse(ingredients));
-console.log(JSON.parse(alts));
+// console log the working data from flask template 
+console.log(ingredients);
+console.log(alts);
 
 // update ratings
-calcSubRatings(ingredients);
+calcSubRatings(ingredients, alts);
 calcCategoryRatings();
 
 
 
-function calcSubRatings(rating_dict){
+function calcSubRatings(ingredients, alts){
     // Assign avg rating for each subcategory
-    var dict = JSON.parse(rating_dict);
-    var notRatings = ["recipe_id", "category_id", "amount", "unit"];
-    for(ingredient in dict){
-        for(rating in dict[ingredient]){
-            if(notRatings.indexOf(rating) !== -1){
+    var notRatingValues = ["id", "category_id", "amount", "unit"];
+    for(name in ingredients){
+        for(rating in alts[name]){
+            if(notRatingValues.includes(rating)){
                 continue;
             }
             tableRating = document.getElementById(rating);
-            rating = dict[ingredient][rating] / (Object.keys(dict).length);
+            rating = alts[name][rating] / (Object.keys(ingredients).length);
             newRating = Math.round((parseFloat(tableRating.innerHTML) + rating) * 100)/100;
             tableRating.innerHTML = newRating;
         }
