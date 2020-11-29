@@ -19,7 +19,7 @@
     <fieldset>
         <legend>Ingredients:</legend>
         {% for ingredient in ingredients %}
-        <input type="checkbox" id="{{ ingredient['id'] }}">Name: {{ ingredient['name'] }}</input></br>
+        <input type="checkbox" id="{{ ingredient['id'] }}">{{ ingredient['name'] }}</input></br>
         {% endfor %}
     </fieldset>
     <button type="button" id="addButton" onclick="createIngInput(event)">Add Other Ingredient</button>
