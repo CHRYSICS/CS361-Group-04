@@ -181,3 +181,7 @@ input[type=submit] {
 .alts .unselected{
   display: none;
 }
+
+#body textarea{
+  width:100%;
+}

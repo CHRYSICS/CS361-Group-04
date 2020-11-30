@@ -166,10 +166,24 @@ def update(id):
     recipe_ingredients = get_recipe_ingredients(id)
     alts = get_recipe_alts(id)
     if request.method == "POST":
-        title = request.form["title"]
-        body = request.form["body"]
+        ingredients = dict()
+        for i in request.form:
+            if "title" in i:
+                title = request.form[i]
+            elif "body" in i:
+                body = request.form[i]
+            elif "category" in i:
+                 recipe_category = request.form[i]
+            elif "ingredient" in i:
+                keys = i.split(':')
+                if keys[1] not in ingredients:
+                    ingredients[keys[1]] = dict()
+                if keys[2] == "unit":
+                    ingredients[keys[1]][keys[2]] = request.form[i]
+                else:
+                    ingredients[keys[1]][keys[2]] = float(request.form[i])
+    
         error = None
-
         if not title:
             error = "Title is required."
         if g.user is None:
@@ -178,11 +192,29 @@ def update(id):
             flash(error, "error")
         else:
             db = get_db()
-            db.execute(
-                "UPDATE recipe SET title = ?, body = ? WHERE id = ?", (title, body, id)
+            cursor = db.cursor()
+            # update this to point to user cookbook database when available, now adds new to recipe 
+            cursor.execute(
+                "INSERT INTO recipe (author_id, category_id, title, body) VALUES (?, ?, ?, ?)",
+                (g.user["id"], recipe_category, title, body),
             )
             db.commit()
+            recipe_id = cursor.lastrowid
+            for i in ingredients:
+                db.execute(
+                    "INSERT INTO recipe_ingredient ('recipe_id', 'ingredient_id', 'amount', 'unit') VALUES (?, ?, ?, ?)",
+                    (recipe_id, ingredients[i]['id'], ingredients[i]['amount'], ingredients[i]['unit']),
+                )
+                db.commit()
             return redirect(url_for("recipe.index"))
+            # db = get_db()
+            # db.execute(
+            #     "UPDATE recipe SET title = ?, body = ? WHERE id = ?", (title, body, id) #update "recipe" to "cookbook" table when made
+            # )
+            # db.commit()
+            # for i in ingredients:
+            #     "UPDATE recipe_ingredient SET title = ?, body = ? WHERE id = ?", (title, body, id)
+            # return redirect(url_for("recipe.index"))
 
     return render_template("recipe/update.html", post=post, alts = alts, recipe_ingredients = recipe_ingredients)
 

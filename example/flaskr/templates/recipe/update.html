@@ -28,66 +28,81 @@
 {% endfor %}
 
 {% set badCutoff, goodCutoff = 2.5, 4.0 %}
-<h1 id="title"> {{ post['title'] }}</h1> 
-
 <form method="post">
-    <table id = "ingredient_table">
-      <thead>
-          <tr>
-              <th>Ingredient</th>
-              <th>Amount</th>
-              <th>Image</th>
-              <th>Pros</th>
-              <th>Cons</th>
-              <th>Other Choices</th>
-  
-          </tr>
-      </thead>
-      {% for item in list %}
-        <tr class = "ingredient" id= "{{alts_info[item]['category_id']}}">
-          <td>{{ item }}</td>
-          <td  class="amount" abbr = "{{ list[item]['amount'] }} {{ list[item]['unit'] }}">{{ list[item]['amount'] }} {{ list[item]['unit'] }}
-            <button type="button" class="amount increase">&#x25B2</button>
-            <button type="button" class="amount decrease">&#x25BC</button>
-          </td>
-          <td> IMAGE PLACEHOLDER </td>
-          <td class="ingredient-pros">
-              {% for rating in ratings %}
-                  {% if alts_info[item][rating] > goodCutoff %}
-                  <span class="good-rating"> {{rating}}: {{ alts_info[item][rating] }}</span>
-                  {% endif %}
-              {% endfor %}
-          </td>
-          <td class="ingredient-cons">
-              {% for rating in ratings %}
-                  {% if alts_info[item][rating] < badCutoff %}
-                  <span class="bad-rating"> {{rating}}: {{ alts_info[item][rating] }}</span>
-                  {% endif %}
-              {% endfor %}
-          </td>
-          <td class="alts">
-            {% for alt in alts_info %}
-              {% if alts_info[item]['category_id'] == alts_info[alt]['category_id'] %}
-                {% if item == alt %}
-                  <p class='alts selected'>{{alt}}</p>
-                {% else %}
-                  <p class='alts unselected'>{{alt}}</p>
-                {% endif %}
-              {% endif %}
-            {% endfor %}
-          </td>
+  <h1 id="title">
+    <label for="title">Title</label>
+    <input name="title" id="title" value="{{ request.form['title'] or post['title'] }}" required>
+  </h1>
+
+  <h2 id="body">
+    <label for="body">Body</label>
+    <br>
+    <textarea name="body" id="body">{{ request.form['body'] or post['body'] }}</textarea>
+    <input name="category" value="{{ request.form['category_id'] or post['category_id'] }}" hidden>
+  </h2>
+
+  <table id = "ingredient_table">
+    <thead>
+      <tr>
+        <th>Ingredient</th>
+        <th>Amount</th>
+        <th>Unit</th>
+        <th>Image</th>
+        <th>Pros</th>
+        <th>Cons</th>
+        <th>Other Choices</th>
       </tr>
-      {% endfor %}
-  
+    </thead>
+    {% for item in list %}
+      <tr class = "ingredient" id= "{{alts_info[item]['category_id']}}">
+        <td>{{ item }}</td>
+        <input name = "ingredient:{{loop.index - 1}}:recipe_id" value="{{list[item]['recipe_id']}}" hidden>
+        <td>
+          <input type = "number" step = "0.1" class="amount" name = "ingredient:{{loop.index - 1}}:amount" value= "{{ list[item]['amount'] }}"></input>
+        </td>
+        <td>
+          {{ list[item]['unit'] }}
+          <input type= "text" name = "ingredient:{{loop.index - 1}}:unit" value= "{{ list[item]['unit'] }}" hidden readonly></input>
+        </td>
+        <td> IMAGE PLACEHOLDER </td>
+        <td class="ingredient-pros">
+          {% for rating in ratings %}
+              {% if alts_info[item][rating] > goodCutoff %}
+                <span class="good-rating"> {{rating}}: {{ alts_info[item][rating] }}</span>
+              {% endif %}
+          {% endfor %}
+        </td>
+        <td class="ingredient-cons">
+          {% for rating in ratings %}
+              {% if alts_info[item][rating] < badCutoff %}
+                <span class="bad-rating"> {{rating}}: {{ alts_info[item][rating] }}</span>
+              {% endif %}
+          {% endfor %}
+        </td>
+        <td class="alts">
+          <select name = "ingredient:{{loop.index - 1}}:id">
+          {% for alt in alts_info %}
+            {% if alts_info[item]['category_id'] == alts_info[alt]['category_id'] %}
+              {% if item == alt %}
+                <option selected value="{{alts_info[alt]['id']}}">{{alt}}</option>
+              {% else %}
+                <option value="{{alts_info[alt]['id']}}">{{alt}}</option>
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+          </select>
+        </td>
+      </tr>
+    {% endfor %}
   </table>
 
-    <input type="submit" value="Step 3: Save to CookBook">
-  </form>
+  <input type="submit" value="Step 3: Save to CookBook">
+</form>
   
-  <script>
-    var ingredients = '{{ list | tojson }}';
-    var alts = '{{ alts_info |tojson }}';
-  </script>
-  <script type="text/javascript" src="{{ url_for('static', filename='js/ratingTable.js') }}"></script>
+<script>
+  var ingredients = '{{ list | tojson }}';
+  var alts = '{{ alts_info |tojson }}';
+</script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/ratingTable.js') }}"></script>
   
 {% endblock %}
