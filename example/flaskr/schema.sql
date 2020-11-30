@@ -7,6 +7,8 @@ DROP TABLE IF EXISTS ingredient;
 DROP TABLE IF EXISTS recipe_cat;
 DROP TABLE IF EXISTS recipe; 
 DROP TABLE IF EXISTS recipe_ingredient; 
+DROP TABLE IF EXISTS recipeBook; 
+DROP TABLE IF EXISTS recipeBook_recipe; 
 
 
 CREATE TABLE "user" (
@@ -62,3 +64,21 @@ CREATE TABLE recipe_ingredient (
   FOREIGN KEY (recipe_id) REFERENCES recipe (id),
   FOREIGN KEY (ingredient_id) REFERENCES user(id)
 );
+
+CREATE TABLE recipeBook (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  author_id INTEGER NOT NULL,
+  created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  title TEXT NOT NULL,
+  body TEXT NOT NULL,
+  FOREIGN KEY (author_id) REFERENCES user (id)
+);
+
+CREATE TABLE recipeBook_recipe (
+  recipeBook_id INTEGER NOT NULL,
+  recipe_id INTEGER NOT NULL,
+  PRIMARY KEY(recipeBook_id, recipe_id),
+  FOREIGN KEY (recipeBook_id) REFERENCES recipeBook (id),
+  FOREIGN KEY (recipe_id) REFERENCES recipe (id)
+);
+
