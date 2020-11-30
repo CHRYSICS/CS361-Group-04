@@ -25,6 +25,7 @@
   {% set id = list[item['name']].update( {"ingredient_id": item['ingredient_id']}) %}
   {% set amount = list[item['name']].update( {"amount": item['amount']}) %}
   {% set unit = list[item['name']].update( {"unit": item['unit']}) %}
+  {% set cat = list[item['name']].update( {"category": alts_info[item['name']]['category_id']} ) %}
 {% endfor %}
 
 {% set badCutoff, goodCutoff = 2.5, 4.0 %}
@@ -79,8 +80,8 @@
               {% endif %}
           {% endfor %}
         </td>
-        <td class="alts">
-          <select name = "ingredient:{{loop.index - 1}}:id">
+        <td>
+          <select id="{{item}}" class="alts" name = "ingredient:{{loop.index - 1}}:id">
           {% for alt in alts_info %}
             {% if alts_info[item]['category_id'] == alts_info[alt]['category_id'] %}
               {% if item == alt %}

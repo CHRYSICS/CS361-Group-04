@@ -1,14 +1,14 @@
 // rating categories (defaulted)
 var categories = {"YOU": [0, {
-    "r_nourishment": ["nourishment", 0],
-    "r_value": ["value", 0]}],
+    "r_nourishment": [0, "nourishment"],
+    "r_value": [0, "value"]}],
 "OTHERS": [0, {
-    "r_human_welfare": ["human welfare", 0],
-    "r_animal_welfare": ["animal welfare", 0]}],
+    "r_human_welfare": [0, "human welfare"],
+    "r_animal_welfare": [0, "animal welfare"]}],
 "PLANET":[0, {
-    "r_resource_cons": ["resource cons", 0],
-    "r_biodiversity": ["biodiversity", 0],
-    "r_global_warming": ["global warming", 0]}]};
+    "r_resource_cons": [0, "resource cons"],
+    "r_biodiversity": [0, "biodiversity"],
+    "r_global_warming": [0, "global warming"]}]};
 
 var icons = {"YOU": "/static/img/icons8-customer-40.png",
     "OTHERS": "/static/img/icons8-user-groups-40.png",
@@ -82,12 +82,12 @@ for(category in categories){
                 td.appendChild(img);
             }
             else if(j == 1){
-                td.innerHTML = categories[category][1][subcat][0];
+                td.innerHTML = categories[category][1][subcat][1];
             }
             else{
                 td.className = "rating";
                 td.id = subcat;
-                td.innerHTML = categories[category][1][subcat][1];
+                td.innerHTML = categories[category][1][subcat][0];
             }
         }
         k++;
@@ -99,10 +99,21 @@ console.log(ingredients);
 console.log(alts);
 
 // update ratings
-calcSubRatings(ingredients, alts);
 calcCategoryRatings();
+console.log(categories);
+
+function zeroRatings(categoryDict){
+    for(name in categoryDict){
+        categoryDict[name][0] = 0;
+        for(subName in categoryDict[name][1]){
+            categoryDict[name][1][subName][0] = 0;
+        }
+    }
+}
 
 function calcSubRatings(ingredients, alts){
+    // zero rate values first
+    zeroRatings(categories);
     // Assign avg rating for each subcategory
     var notRatingValues = ["id", "category_id", "amount", "unit"];
     for(name in ingredients){
@@ -110,25 +121,37 @@ function calcSubRatings(ingredients, alts){
             if(notRatingValues.includes(rating)){
                 continue;
             }
-            tableRating = document.getElementById(rating);
-            rating = alts[name][rating] / (Object.keys(ingredients).length);
-            newRating = Math.round((parseFloat(tableRating.innerHTML) + rating) * 100)/100;
-            tableRating.innerHTML = newRating;
+            for(cat in categories){
+                if(rating in categories[cat][1]){
+                    curVal = categories[cat][1][rating][0];
+                    newAdd = alts[name][rating] / (Object.keys(ingredients).length);
+                    newVal = Math.round((curVal + newAdd) * 100)/100;
+                    categories[cat][1][rating][0] = newVal;
+                    tableRating = document.getElementById(rating);
+                    tableRating.innerHTML = newVal;
+                    break;
+                }
+            }
         }
     }
 }
 
 function calcCategoryRatings(){
+    // update subcategories first
+    calcSubRatings(ingredients, alts);
     // Assign avg rating for each category
-    for(category in categories){
-        table = document.getElementById(category);
-        avgRating = table.querySelector(".avgRating");
-        ratings = table.querySelectorAll(".rating");
-        for(r = 0; r < ratings.length; r++){
-            value = parseFloat(ratings[r].innerHTML) / ratings.length;
-            newValue = Math.round((parseFloat(avgRating.innerHTML) + value) * 100 )/ 100;
-            avgRating.innerHTML = newValue;
+    for(cat in categories){
+        categories[cat][0] = 0;
+        curVal = 0;
+        subCats = categories[cat][1];
+        for(sub in subCats){
+            newAdd = subCats[sub][0] / (Object.keys(subCats).length);
+            curVal += newAdd;
         }
+        categories[cat][0] = Math.round(curVal * 100)/100;
+        table = document.getElementById(cat);
+        avgRating = table.querySelector(".avgRating");
+        avgRating.innerHTML = categories[cat][0];
     }
 }
 
@@ -178,3 +201,110 @@ function showTableBody(event) {
         clicktarget.innerHTML = '\u25BC';
     }
 }
+
+function changeAlts(currentTarget){
+    // changes currentIngredient to selected ingredient
+    currentTarget.onchange = function(){
+        console.log(currentTarget.value);
+        for(name in ingredients){
+            if(ingredients[name]["id"] == currentTarget.value){
+                console.log(ingredient[name]);
+            }
+        }
+    }
+    // for(i = 1; i < targets.length; i++){
+    //     if(targets[i].classList.contains("selected")){
+    //         target = targets[i];
+    //         target.className = "alts unselected";
+    //         if(i == targets.length - 1){
+    //             nextTarget = targets[1];
+    //             nextTarget.className = "alts selected";
+    //         }else{
+    //             nextTarget = targets[i + 1];
+    //             nextTarget.className = "alts selected";
+    //         }
+    //         return;
+    //     }
+    // }
+}
+
+function changeAmount(currentTarget, signal){
+    // Depending on signal, either increase or decrease amount by .1
+    target = currentTarget.querySelector(".amount");
+    inputs = target.innerHTML.split(" ");
+    returnInput = "";
+    if(signal === "increase"){
+        inputs[0] = Math.round((parseFloat(inputs[0]) + .1) * 100)/100;
+        for(i in inputs){
+            returnInput += inputs[i] + " ";
+        }
+        target.abbr = inputs[0] + " " + inputs[1];
+        target.innerHTML = returnInput;
+        console.log(target.abbr);
+    }
+    else if(signal === "decrease"){
+        inputs[0] = Math.round((parseFloat(inputs[0]) - .1) * 100)/100;
+        for(i in inputs){
+            returnInput += inputs[i] + " ";
+        }
+        target.abbr = inputs[0] + " " + inputs[1];
+        target.innerHTML = returnInput;
+    }else{return;}
+}
+
+function eventManager(event){
+    // handles events from ingredient table and call corresponding function
+    target = event.target;
+    curtarget = event.currentTarget;
+    classes = target.classList;
+    if(target.classList.contains("alts")){
+        changeAlts(target);
+    }
+    else if(target.classList.contains("amount")){
+        if(classes.contains("increase")){
+            changeAmount(curtarget, "increase");
+        }else if(classes.contains("decrease")){
+            changeAmount(curtarget, "decrease");
+        }
+    }
+    else{return;}
+}
+
+function updateRecipe(event){
+    //console.log(event.currentTarget);
+}
+// add event listener to ingredient table
+Array.from(document.getElementsByClassName('alts')).forEach(selected => {
+    selected.onchange = function(){
+        var id = selected.value;
+        var name, category;
+        for(name in alts){
+            if(parseInt(alts[name]["id"]) == selected.value){
+                category = alts[name]["category_id"];
+                break;
+            }
+        }
+        for(item in ingredients){
+            if(ingredients[item]["category"] == category){
+                amount = ingredients[item]["amount"];
+                unit = ingredients[item]["unit"];
+                recipe_id = ingredients[item]["unit"];
+                delete ingredients[item];
+
+                ingredients[name] = {};
+                ingredients[name]["recipe_id"] = recipe_id;
+                ingredients[name]["ingredient_id"] = selected.value;
+                ingredients[name]["category"] = category;
+                ingredients[name]["amount"] = amount;
+                ingredients[name]["unit"] = unit;
+                calcSubRatings(ingredients, alts);
+                calcCategoryRatings();
+                return;
+            }
+        }
+    }
+});
+// document.querySelectorAll('.ingredient').forEach(item => {
+//     item.addEventListener('click', eventManager);
+//     item.addEventListener('click', updateRecipe);
+// })

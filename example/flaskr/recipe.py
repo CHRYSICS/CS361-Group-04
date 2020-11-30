@@ -198,7 +198,6 @@ def update(id):
                 "INSERT INTO recipe (author_id, category_id, title, body) VALUES (?, ?, ?, ?)",
                 (g.user["id"], recipe_category, title, body),
             )
-            db.commit()
             recipe_id = cursor.lastrowid
             for i in ingredients:
                 db.execute(
