@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Step 2: Edit Recipe Profile {{ post['title'] }}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+{% set ratings = [ 'r_nourishment', 'r_value', 'r_human_welfare',
+'r_animal_welfare', 'r_resource_cons', 'r_biodiversity','r_global_warming'] %}
+{% set badCutoff, goodCutoff = 2.5, 4.0 %}
+  <form method="post">
+    <label for="title">Title</label>
+    <input name="title" id="title" value="{{ request.form['title'] or post['title'] }}" required>
+    <label for="body">Body</label>
+    <textarea name="body" id="body">{{ request.form['body'] or post['body'] }}</textarea>
+    
+    <table>
+      <thead>
+          <tr>
+              <th>Ingredient</th>
+              <th>Amount</th>
+              <th>Image</th>
+              <th>Pros</th>
+              <th>Cons</th>
+              <th>Other Choices</th>
+  
+          </tr>
+      </thead>
+      {% for ingredient in ingredients %}
+      <tr>
+          <td>{{ ingredient['name'] }}</td>
+          <td>{{ ingredient['amount'] }} {{ ingredient['unit'] }}</td>
+          <td> IMAGE PLACEHOLDER </td>
+          <td class="ingredient-pros">
+              {% for rating in ratings %}
+                  {% if ingredient[rating] > goodCutoff %}
+                  <span class="good-rating"> {{rating}}: {{ ingredient[rating] }}</span>
+                  {% endif %}
+              {% endfor %}
+          </td>
+          <td class="ingredient-cons">
+              {% for rating in ratings %}
+                  {% if ingredient[rating] < badCutoff %}
+                  <span class="bad-rating"> {{rating}}: {{ ingredient[rating] }}</span>
+                  {% endif %}
+              {% endfor %}
+          </td>
+      </tr>
+      {% endfor %}
+  
+  </table>
+
+    <input type="submit" value="Save">
+  </form>
+  <hr>
+  <form action="{{ url_for('recipe.delete', id=post['id']) }}" method="post">
+    <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
+  </form>
+{% endblock %}

@@ -173,3 +173,15 @@ input[type=submit] {
   background: rgba(0, 255,67,.57);
   background: linear-gradient(0deg, rgba(0,255,67,0.5669000021883753) 0%, rgba(0,255,67,0) 100%);
 }
+
+.alts .selected{
+  display: block;
+}
+
+.alts .unselected{
+  display: none;
+}
+
+#body textarea{
+  width:100%;
+}

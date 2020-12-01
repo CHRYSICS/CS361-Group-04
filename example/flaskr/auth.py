@@ -131,7 +131,7 @@ def login():
 def logout():
     """Clear the current session, including the stored user id."""
     session.clear()
-    return redirect(url_for("portal"))
+    return redirect(url_for("auth.arrival"))
 
 @bp.route("/guestRestricted")
 def accessError():

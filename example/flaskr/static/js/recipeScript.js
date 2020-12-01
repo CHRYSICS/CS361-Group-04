@@ -13,6 +13,7 @@ function createIngInput(event){
 
   }
 
-  function insertBefore(newNode, referenceNode) {
-    referenceNode.parentNode.insertBefore(newNode, referenceNode);
+function insertBefore(newNode, referenceNode) {
+  referenceNode.parentNode.insertBefore(newNode, referenceNode);
 }
+
