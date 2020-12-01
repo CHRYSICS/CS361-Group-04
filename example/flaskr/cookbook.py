@@ -17,6 +17,32 @@ import sqlite3
 bp = Blueprint("cookbook", __name__, url_prefix="/cookbook")
 
 
+@bp.route("/index", methods=("GET", "POST"))
+@login_required
+def index():
+    """Shows all recipes in a user's recipe book, POST method filters recipes shown, ordered most recent first."""
+    if g.user is None:
+        error = "Must Be a User to Have a Recipe Book"
+    
+    db = get_db()
+
+    sqlQuery = "SELECT * FROM recipe r JOIN recipeBook_recipe rbr ON \
+            rbr.recipeBook_id = (SELECT id FROM recipeBook WHERE author_id= ? ) \
+                JOIN recipe_cat rc ON r.category_id = rc.id "
+
+    if request.method == "POST":
+        sqlQuery += "WHERE " + \
+            request.form["filter"] + " LIKE '%" + \
+            request.form["search"] + "%' "
+
+        if request.form["category"] != 'NULL':
+            sqlQuery += "AND rc.name = '" + request.form["category"] + "' "
+
+    sqlQuery += "ORDER BY created DESC"
+
+    recipes = db.execute(sqlQuery, (g.user["id"],)).fetchall()
+    return render_template("cookbook/index.html", recipes=recipes)
+
 @bp.route("/add_recipe/<int:recipe_id>", methods=("GET",))
 @login_required
 def save_recipe(recipe_id):
