@@ -16,31 +16,29 @@ import sqlite3
 
 bp = Blueprint("cookbook", __name__, url_prefix="/cookbook")
 
-@bp.route("/<int:id>/update", methods=("GET", "POST"))
-def update(id):
-    """Update a recipe if the current user is the author."""
-    post = get_recipe(id)
-    ingredients = get_recipe_ingredients(id)
-    if request.method == "POST":
-        title = request.form["title"]
-        body = request.form["body"]
-        error = None
 
-        if not title:
-            error = "Title is required."
-        if g.user is None:
-            error = "Must Be a User to Save to Recipe Book"
-        if error is not None:
-            flash(error, "error")
-        else:
-            db = get_db()
-            db.execute(
-                "UPDATE recipe SET title = ?, body = ? WHERE id = ?", (title, body, id)
-            )
-            db.commit()
-            return redirect(url_for("recipe.index"))
+@bp.route("/add_recipe/<int:recipe_id>", methods=("GET",))
+def save_recipe(recipe_id):
+    """Save recipe to current user's recipe book."""
+    error = None
 
-    return render_template("recipe/update.html", post=post, ingredients = ingredients)
+    if g.user is None:
+        error = "Must Be a User to Save to Recipe Book"
+    if error is not None:
+        flash(error, "error")
+    else:
+        db = get_db()
+
+        db.execute(
+            "INSERT INTO recipeBook_recipe (recipeBook_id, recipe_id) \
+            VALUES ( (SELECT id FROM recipeBook WHERE author_id = ?), ?)", 
+            (g.user["id"], recipe_id,)
+        )
+        db.commit()
+        flash(error, "Added to recipe book!")
+        return redirect(url_for("recipe.index"))
+
+    return redirect(url_for("recipe.index"))
 
 
 @bp.route("/<int:id>/delete", methods=("POST",))

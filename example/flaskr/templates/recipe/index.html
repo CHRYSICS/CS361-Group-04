@@ -49,7 +49,7 @@
           <a class="action" href="{{ url_for('recipe.update', id=recipe['id']) }}">Edit</a>
         {% endif %}
         <a class="action" href="{{ url_for('recipe.view_recipe', id=recipe['id']) }}">Select</a>
-        <a class="action" href="{{ url_for('recipe.update', id=recipe['id']) }}">Save to Recipe Book</a>
+        <a class="action" method="POST" href="{{ url_for('cookbook.save_recipe', recipe_id=recipe['id']) }}">Save to Recipe Book</a>
       </header>
       <p class="body">{{ recipe['body'] }}</p>
   </article>
