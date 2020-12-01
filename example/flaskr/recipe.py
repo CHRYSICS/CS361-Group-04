@@ -5,11 +5,14 @@ from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
+from flask import send_from_directory
+
 from werkzeug.exceptions import abort
 
 from flaskr.auth import login_required
 from flaskr.db import get_db
 from flaskr.ingredient import getAlternativesByRatingAvg
+from flaskr.ingredient import getAlternatives
 import time
 import sqlite3
 
@@ -42,6 +45,10 @@ def view_recipe(id):
     ingredients = get_recipe_ingredients(id)
     return render_template("recipe/view.html", recipe=recipe, ingredients=ingredients)
 
+@bp.route("/<int:id>/static/<path:path>")
+def static_dir(id, path):
+    return send_from_directory("static", path)
+
 
 def get_recipe(id):
     recipe = (
@@ -65,16 +72,13 @@ def get_recipe(id):
 
     return recipe
 
-
 def get_recipe_ingredients(id):
     """Get a list of ingredients in a Recipe querying the database by recipe id."""
     recipe = get_recipe(id)
     ingredients = (
         get_db()
             .execute(
-            "SELECT recipe_id, ingredient_id, amount, unit, name, category_id \
-            r_nourishment, r_value, r_human_welfare, r_animal_welfare,   \
-            r_resource_cons, r_biodiversity, r_global_warming\
+            "SELECT *\
             FROM recipe_ingredient ri \
             JOIN ingredient i ON i.id=ingredient_id \
             WHERE recipe_id= ?",
@@ -83,6 +87,37 @@ def get_recipe_ingredients(id):
     )
     return ingredients
 
+def get_ingredients_data(id):
+    """Get a list of ingredients in a Recipe querying the database by recipe id."""
+    recipe = get_recipe(id)
+    ingredients = (
+        get_db()
+            .execute(
+            "SELECT * FROM ingredient WHERE id IN \
+            (SELECT ingredient_id\
+            FROM recipe_ingredient ri \
+            JOIN ingredient i ON i.id=ingredient_id \
+            WHERE recipe_id= ?)",
+            (id,)
+        )
+    )
+    return ingredients
+
+def get_recipe_alts(id):
+    """Get a list of ingredients in a Recipe querying the database by recipe id."""
+    recipe = get_recipe(id)
+    alts = (
+        get_db()
+            .execute(
+            "SELECT * FROM ingredient WHERE category_id IN \
+            (SELECT category_id \
+            FROM recipe_ingredient ri \
+            JOIN ingredient i ON i.id=ingredient_id \
+            WHERE recipe_id= ?)",
+            (id,)
+        )
+    )
+    return alts
 
 @bp.route("/create", methods=("GET", "POST"))
 def create():
@@ -125,30 +160,62 @@ def create():
 
 
 @bp.route("/<int:id>/update", methods=("GET", "POST"))
-@login_required
 def update(id):
     """Update a recipe if the current user is the author."""
     post = get_recipe(id)
-
+    recipe_ingredients = get_recipe_ingredients(id)
+    alts = get_recipe_alts(id)
     if request.method == "POST":
-        title = request.form["title"]
-        body = request.form["body"]
+        ingredients = dict()
+        for i in request.form:
+            if "title" in i:
+                title = request.form[i]
+            elif "body" in i:
+                body = request.form[i]
+            elif "category" in i:
+                 recipe_category = request.form[i]
+            elif "ingredient" in i:
+                keys = i.split(':')
+                if keys[1] not in ingredients:
+                    ingredients[keys[1]] = dict()
+                if keys[2] == "unit":
+                    ingredients[keys[1]][keys[2]] = request.form[i]
+                else:
+                    ingredients[keys[1]][keys[2]] = float(request.form[i])
+    
         error = None
-
         if not title:
             error = "Title is required."
-
+        if g.user is None:
+            error = "Must Be a User to Save to Recipe Book"
         if error is not None:
-            flash(error)
+            flash(error, "error")
         else:
             db = get_db()
-            db.execute(
-                "UPDATE recipe SET title = ?, body = ? WHERE id = ?", (title, body, id)
+            cursor = db.cursor()
+            # update this to point to user cookbook database when available, now adds new to recipe 
+            cursor.execute(
+                "INSERT INTO recipe (author_id, category_id, title, body) VALUES (?, ?, ?, ?)",
+                (g.user["id"], recipe_category, title, body),
             )
-            db.commit()
+            recipe_id = cursor.lastrowid
+            for i in ingredients:
+                db.execute(
+                    "INSERT INTO recipe_ingredient ('recipe_id', 'ingredient_id', 'amount', 'unit') VALUES (?, ?, ?, ?)",
+                    (recipe_id, ingredients[i]['id'], ingredients[i]['amount'], ingredients[i]['unit']),
+                )
+                db.commit()
             return redirect(url_for("recipe.index"))
+            # db = get_db()
+            # db.execute(
+            #     "UPDATE recipe SET title = ?, body = ? WHERE id = ?", (title, body, id) #update "recipe" to "cookbook" table when made
+            # )
+            # db.commit()
+            # for i in ingredients:
+            #     "UPDATE recipe_ingredient SET title = ?, body = ? WHERE id = ?", (title, body, id)
+            # return redirect(url_for("recipe.index"))
 
-    return render_template("recipe/update.html", post=post)
+    return render_template("recipe/update.html", post=post, alts = alts, recipe_ingredients = recipe_ingredients)
 
 
 @bp.route("/<int:id>/delete", methods=("POST",))

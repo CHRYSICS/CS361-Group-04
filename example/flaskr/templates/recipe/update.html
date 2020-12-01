@@ -1,19 +1,109 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Edit "{{ post['title'] }}"{% endblock %}</h1>
+  <h1>{% block title %}Step 2: Edit Recipe Ethical Profile{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-  <form method="post">
+{% set ratings = [ 'r_nourishment', 'r_value', 'r_human_welfare',
+'r_animal_welfare', 'r_resource_cons', 'r_biodiversity','r_global_warming'] %}
+
+{% set alts_info = dict() %}
+{% for alt in alts %}
+  {% set alternative = alts_info.update( {alt['name']: dict()} ) %}
+  {% set id = alts_info[alt['name']].update({"id": alt['id']})%}
+  {% set cat = alts_info[alt['name']].update({"category_id": alt['category_id']})%}
+  {% for rating in ratings %}
+    {% set r = alts_info[alt['name']].update({rating: alt[rating]})%}
+  {% endfor %}
+{% endfor %}
+
+{% set list = dict() %}
+{% for item in recipe_ingredients %}
+  {% set i = list.update( {item['name']: dict()}) %}
+  {% set recipe_id = list[item['name']].update( {"recipe_id": item['recipe_id']}) %}
+  {% set id = list[item['name']].update( {"ingredient_id": item['ingredient_id']}) %}
+  {% set amount = list[item['name']].update( {"amount": item['amount']}) %}
+  {% set unit = list[item['name']].update( {"unit": item['unit']}) %}
+  {% set cat = list[item['name']].update( {"category": alts_info[item['name']]['category_id']} ) %}
+{% endfor %}
+
+{% set badCutoff, goodCutoff = 2.5, 4.0 %}
+<form method="post">
+  <h1 id="title">
     <label for="title">Title</label>
     <input name="title" id="title" value="{{ request.form['title'] or post['title'] }}" required>
+  </h1>
+
+  <h2 id="body">
     <label for="body">Body</label>
+    <br>
     <textarea name="body" id="body">{{ request.form['body'] or post['body'] }}</textarea>
-    <input type="submit" value="Save">
-  </form>
-  <hr>
-  <form action="{{ url_for('recipe.delete', id=post['id']) }}" method="post">
-    <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
-  </form>
+    <input name="category" value="{{ request.form['category_id'] or post['category_id'] }}" hidden>
+  </h2>
+
+  <table id = "ingredient_table">
+    <thead>
+      <tr>
+        <th>Ingredient</th>
+        <th>Amount</th>
+        <th>Unit</th>
+        <th>Image</th>
+        <th>Pros</th>
+        <th>Cons</th>
+        <th>Other Choices</th>
+      </tr>
+    </thead>
+    {% for item in list %}
+      <tr class = "ingredient" id= "{{alts_info[item]['category_id']}}">
+        <td>{{ item }}</td>
+        <input name = "ingredient:{{loop.index - 1}}:recipe_id" value="{{list[item]['recipe_id']}}" hidden>
+        <td>
+          <input type = "number" step = "0.1" class="amount" name = "ingredient:{{loop.index - 1}}:amount" value= "{{ list[item]['amount'] }}"></input>
+        </td>
+        <td>
+          {{ list[item]['unit'] }}
+          <input type= "text" name = "ingredient:{{loop.index - 1}}:unit" value= "{{ list[item]['unit'] }}" hidden readonly></input>
+        </td>
+        <td> IMAGE PLACEHOLDER </td>
+        <td class="ingredient-pros">
+          {% for rating in ratings %}
+              {% if alts_info[item][rating] > goodCutoff %}
+                <span class="good-rating"> {{rating}}: {{ alts_info[item][rating] }}</span>
+              {% endif %}
+          {% endfor %}
+        </td>
+        <td class="ingredient-cons">
+          {% for rating in ratings %}
+              {% if alts_info[item][rating] < badCutoff %}
+                <span class="bad-rating"> {{rating}}: {{ alts_info[item][rating] }}</span>
+              {% endif %}
+          {% endfor %}
+        </td>
+        <td>
+          <select id="{{item}}" class="alts" name = "ingredient:{{loop.index - 1}}:id">
+          {% for alt in alts_info %}
+            {% if alts_info[item]['category_id'] == alts_info[alt]['category_id'] %}
+              {% if item == alt %}
+                <option selected value="{{alts_info[alt]['id']}}">{{alt}}</option>
+              {% else %}
+                <option value="{{alts_info[alt]['id']}}">{{alt}}</option>
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+          </select>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+
+  <input type="submit" value="Step 3: Save to CookBook">
+</form>
+  
+<script>
+  var ingredients = '{{ list | tojson }}';
+  var alts = '{{ alts_info |tojson }}';
+</script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/ratingTable.js') }}"></script>
+  
 {% endblock %}

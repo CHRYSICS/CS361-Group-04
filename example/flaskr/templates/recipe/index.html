@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Recipes{% endblock %}</h1>
-  <a class="action" href="{{ url_for('recipe.create') }}">New Recipe</a>
+  <h1>{% block title %}Step 1: Select Common Recipe{% endblock %}</h1>
+  <a class="action" href="{{ url_for('recipe.create') }}">Add Common Recipe</a>
 {% endblock %}
 
 {% block content %}
 <form method="POST">
-  <label for="search">Search</label>
+  <label for="search">Search For Recipes</label>
   <input name="search" id="search" value="{{ request.form['search'] }}">
   <label for="filter">Filter</label>
   <div>
