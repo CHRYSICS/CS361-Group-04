@@ -162,7 +162,7 @@ def create():
 @bp.route("/<int:id>/update", methods=("GET", "POST"))
 def update(id):
     """Update a recipe if the current user is the author."""
-    post = get_recipe(id)
+    recipe = get_recipe(id)
     recipe_ingredients = get_recipe_ingredients(id)
     alts = get_recipe_alts(id)
     if request.method == "POST":
@@ -173,7 +173,7 @@ def update(id):
             elif "body" in i:
                 body = request.form[i]
             elif "category" in i:
-                 recipe_category = request.form[i]
+                recipe_category = request.form[i]
             elif "ingredient" in i:
                 keys = i.split(':')
                 if keys[1] not in ingredients:
@@ -215,7 +215,7 @@ def update(id):
             #     "UPDATE recipe_ingredient SET title = ?, body = ? WHERE id = ?", (title, body, id)
             # return redirect(url_for("recipe.index"))
 
-    return render_template("recipe/update.html", post=post, alts = alts, recipe_ingredients = recipe_ingredients)
+    return render_template("recipe/update.html", recipe=recipe, alts = alts, recipe_ingredients = recipe_ingredients)
 
 
 @bp.route("/<int:id>/delete", methods=("POST",))

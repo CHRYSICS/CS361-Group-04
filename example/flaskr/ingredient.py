@@ -10,6 +10,7 @@ from flask import session
 from flask import url_for
 from flaskr.db import get_db
 import time
+from werkzeug.exceptions import abort
 
 bp = Blueprint("ingredient", __name__, url_prefix="/ingredient")
 RATINGS = [ 'r_nourishment',
@@ -40,7 +41,7 @@ def getIngredient(ingredientName):
     if ingredient is None:
         abort(404, f"Ingredient with name {ingredientName} doesn't exist.")
 
-    return render_template("recipe/ingredient.html", ingredient = ingredient, alts = alts)
+    return render_template("ingredient/ingredient.html", ingredient = ingredient, alts = alts)
 
 def ingredientQuery(ingredientName, db):
     """ Retrieves an Ingredient by name. Returns the row associated with the ingredient
@@ -95,7 +96,6 @@ def getAlternativesByRating(ingredientName, ratingName):
             404, f"Ingredient with name {ingredientName} has no alternatives.")
 
     return alts
-
 
 
 def getAlternativesByRatingAvg(ingredientName):

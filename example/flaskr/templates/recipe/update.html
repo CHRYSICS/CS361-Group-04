@@ -32,14 +32,14 @@
 <form method="post">
   <h1 id="title">
     <label for="title">Title</label>
-    <input name="title" id="title" value="{{ request.form['title'] or post['title'] }}" required>
+    <input name="title" id="title" value="{{ request.form['title'] or recipe['title'] }}" required>
   </h1>
 
   <h2 id="body">
     <label for="body">Body</label>
     <br>
-    <textarea name="body" id="body">{{ request.form['body'] or post['body'] }}</textarea>
-    <input name="category" value="{{ request.form['category_id'] or post['category_id'] }}" hidden>
+    <textarea name="body" id="body">{{ request.form['body'] or recipe['body'] }}</textarea>
+    <input name="category" value="{{ request.form['category_id'] or recipe['category_id'] }}" hidden>
   </h2>
 
   <table id = "ingredient_table">
