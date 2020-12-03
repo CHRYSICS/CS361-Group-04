@@ -1,30 +1,31 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}New Recipe{% endblock %}</h1>
+<h1>{% block title %}New Recipe{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-  <form id="recipe" method="post">
+<form id="recipe" method="post">
     <label for="title">Title</label>
     <input name="title" id="title" value="{{ request.form['title'] }}" required>
     <label for="body">Body</label>
     <textarea name="body" id="body">{{ request.form['body'] }}</textarea>
     <label for="category">Recipe Category</label>
     <select id="category" name="category">
-      {% for category in categories %}
-      <option value={{ category['id'] }}>{{ category['name'] }}</option>
-      {% endfor %}
+        {% for category in categories %}
+        <option value={{ category['id'] }}>{{ category['name'] }}</option>
+        {% endfor %}
     </select>
-    <h2>Enter Ingredients</h2>
-    {% for ingredient in ingredients %}
-    <span>Id: {{ ingredient['id'] }} Name: {{ ingredient['name'] }} </span>
-    {% endfor %}
-
-    <button type="button" id="addButton" onclick="createIngInput(event)">Add Ingredient</button>
+    <fieldset>
+        <legend>Ingredients:</legend>
+        {% for ingredient in ingredients %}
+        <input type="checkbox" id="{{ ingredient['id'] }}">{{ ingredient['name'] }}</input></br>
+        {% endfor %}
+    </fieldset>
+    <button type="button" id="addButton" onclick="createIngInput(event)">Add Other Ingredient</button>
     <br id="listFooter">
     <input type="submit" value="Save">
-  </form>
+</form>
 
-  <script type="text/javascript" src="{{ url_for('static', filename='js/recipeScript.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/recipeScript.js') }}"></script>
 {% endblock %}
