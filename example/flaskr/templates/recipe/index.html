@@ -45,11 +45,7 @@
           <h1>{{ recipe['title'] }}</h1>
           <div class="about">by {{ recipe['username'] }} on {{ recipe['created'].strftime('%Y-%m-%d') }}</div>
         </div>
-        {% if g.user['id'] == recipe['author_id'] %}
-          <a class="action" href="{{ url_for('recipe.update', id=recipe['id']) }}">Edit</a>
-        {% endif %}
-        <a class="action" href="{{ url_for('recipe.view_recipe', id=recipe['id']) }}">Select</a>
-        <a class="action" method="POST" href="{{ url_for('cookbook.save_recipe', recipe_id=recipe['id']) }}">Save to Recipe Book</a>
+        <a class="action" href="{{ url_for('recipe.view_recipe', id=recipe['id']) }}">View</a>
       </header>
       <p class="body">{{ recipe['body'] }}</p>
   </article>

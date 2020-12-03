@@ -19,7 +19,3 @@ JOIN ingredient i ON i.id = ingredient_id
 SELECT recipe_id, ingredient_id, amount, unit, name, category_id FROM recipe_ingredient ri 
 JOIN ingredient i ON i.id = ingredient_id
 WHERE recipe_id = 1
-
--- Get all recipes in a user's recipe book given a current user--
-SELECT * FROM recipe r JOIN recipeBook_recipe rbr ON 
-rbr.recipeBook_id = (SELECT id FROM recipeBook WHERE author_id = 2)

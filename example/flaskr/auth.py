@@ -80,17 +80,6 @@ def register():
                 "INSERT INTO user (username, password) VALUES (?, ?)",
                 (username, generate_password_hash(password)),
             )
-            # get the generated user id
-            userId = db.execute(
-                "SELECT id FROM user WHERE username = ?", 
-                (username,),
-            ).fetchone()['id']
-            # create a default recipeBook for the new user
-            db.execute(
-                "INSERT INTO recipeBook (author_id, title, body)  \
-                VALUES (?, ?, ?)", 
-                (userId, f"{username}'s Recipe Book", "My favorite ethical recipes."),
-            )
             db.commit()
 
             # create successful registration response object

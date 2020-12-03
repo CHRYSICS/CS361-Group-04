@@ -32,12 +32,11 @@ def create_app(test_config=None):
     db.init_app(app)
 
     # apply the blueprints to the app
-    from flaskr import auth, ingredient, recipe, cookbook
+    from flaskr import auth, ingredient, recipe
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(ingredient.bp)
     app.register_blueprint(recipe.bp)
-    app.register_blueprint(cookbook.bp)
 
     # Before navigating to the content of this application,
     # direct user to portal.  This gives user the option 
