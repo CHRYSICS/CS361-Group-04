@@ -1,7 +1,9 @@
 
 -- Inserts dummy data into ingredient_cat and ingredient tables
 
-INSERT INTO ingredient_cat ('name') VALUES ('Fat'), ('Potato'), ('Salt'), ('Spice'), ('Milk');
+INSERT INTO ingredient_cat ('name') VALUES ('Fat'), ('Potato'), ('Salt'),
+ ('Spice'), ('Milk'), ('Sugar'), ('Egg'), ('Vanilla'), ('Leavener'), ('Chocolate'),
+ ('Nuts');
 
 INSERT INTO ingredient VALUES (NULL,'butter-generic', 1, 3.0, 3.5, 3.0, 2.5, 2.5, 3.0, 2.0);
 INSERT INTO ingredient VALUES (NULL, 'butter-organic', 1, 3.0, 3.5, 3.0, 3.0, 3.0, 3.5, 2.0);
@@ -19,4 +21,9 @@ INSERT INTO ingredient VALUES (NULL, 'pepper-organic', 4, 4.0, 4.0, 4.0, 4.0, 4.
 
 INSERT INTO ingredient VALUES (NULL, 'milk-generic', 5, 3.0, 4.0, 3.0, 2.5, 2.5, 2.5, 1.0);
 INSERT INTO ingredient VALUES (NULL, 'milk-organic', 5, 4.0, 4.0, 4.0, 4.0, 4.5, 3.5, 2.0);   
-INSERT INTO ingredient VALUES (NULL, 'milk-soy', 5, 4.0, 3.5, 4.0, 4.0, 4.5, 3.5, 4.0);   
+INSERT INTO ingredient VALUES (NULL, 'milk-soy', 5, 4.0, 3.5, 4.0, 4.0, 4.5, 3.5, 4.0);  
+
+INSERT INTO ingredient VALUES (NULL, 'sugar-granulated-generic', 6, .5, 2.0, 3.0, 3.0, 2.5, 2.0, 2.0);
+INSERT INTO ingredient VALUES (NULL, 'sugar-light-brown-generic', 6, .5, 3.0, 2.5, 3.0, 2.5, 2.0, 2.0);
+
+INSERT INTO ingredient VALUES (NULL, 'egg-whole-generic', 7, 4.0, 4.0, 3.0, 2.0, 2.5, 2.5, 2.5);
