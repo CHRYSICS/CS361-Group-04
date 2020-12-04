@@ -62,7 +62,7 @@ CREATE TABLE recipe_ingredient (
   unit TEXT NOT NULL, 
   PRIMARY KEY(recipe_id, ingredient_id),
   FOREIGN KEY (recipe_id) REFERENCES recipe (id),
-  FOREIGN KEY (ingredient_id) REFERENCES user(id)
+  FOREIGN KEY (ingredient_id) REFERENCES ingredient(id)
 );
 
 CREATE TABLE recipeBook (

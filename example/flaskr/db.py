@@ -39,9 +39,7 @@ def init_db():
         db.executescript(f.read().decode("utf8"))
 
     # add dummy data
-    with current_app.open_resource("ingredient.sql") as f:
-        db.executescript(f.read().decode("utf8"))
-    with current_app.open_resource("recipe.sql") as f:
+    with current_app.open_resource("data.sql") as f:
         db.executescript(f.read().decode("utf8"))
 
 @click.command("init-db")

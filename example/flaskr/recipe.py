@@ -205,7 +205,7 @@ def update(id):
                     (recipe_id, ingredients[i]['id'], ingredients[i]['amount'], ingredients[i]['unit']),
                 )
                 db.commit()
-            return redirect(url_for("recipe.index"))
+            return redirect(url_for("cookbook.index"))
             # db = get_db()
             # db.execute(
             #     "UPDATE recipe SET title = ?, body = ? WHERE id = ?", (title, body, id) #update "recipe" to "cookbook" table when made

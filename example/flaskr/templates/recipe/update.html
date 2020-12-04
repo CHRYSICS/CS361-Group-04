@@ -49,8 +49,8 @@
         <th>Amount</th>
         <th>Unit</th>
         <th>Image</th>
-        <th>Pros</th>
-        <th>Cons</th>
+        <!--<th>Pros</th>-->
+        <!--<th>Cons</th>-->
         <th>Other Choices</th>
       </tr>
     </thead>
@@ -66,7 +66,7 @@
           <input type= "text" name = "ingredient:{{loop.index - 1}}:unit" value= "{{ list[item]['unit'] }}" hidden readonly></input>
         </td>
         <td> IMAGE PLACEHOLDER </td>
-        <td class="ingredient-pros">
+        <!--<td class="ingredient-pros">
           {% for rating in ratings %}
               {% if alts_info[item][rating] > goodCutoff %}
                 <span class="good-rating"> {{rating}}: {{ alts_info[item][rating] }}</span>
@@ -79,7 +79,7 @@
                 <span class="bad-rating"> {{rating}}: {{ alts_info[item][rating] }}</span>
               {% endif %}
           {% endfor %}
-        </td>
+        </td>-->
         <td>
           <select id="{{item}}" class="alts" name = "ingredient:{{loop.index - 1}}:id">
           {% for alt in alts_info %}
