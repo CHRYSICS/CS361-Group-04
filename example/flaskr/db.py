@@ -34,19 +34,13 @@ def init_db():
     """Clear existing data and create new tables."""
     db = get_db()
 
-    # init database
-    with current_app.open_resource("db.sql") as f:
+    # create tables
+    with current_app.open_resource("schema.sql") as f:
         db.executescript(f.read().decode("utf8"))
 
-    # # create tables
-    # with current_app.open_resource("schema.sql") as f:
-    #     db.executescript(f.read().decode("utf8"))
-
-    # # add dummy data
-    # with current_app.open_resource("ingredient.sql") as f:
-    #     db.executescript(f.read().decode("utf8"))
-    # with current_app.open_resource("recipe.sql") as f:
-    #     db.executescript(f.read().decode("utf8"))
+    # add dummy data
+    with current_app.open_resource("data.sql") as f:
+        db.executescript(f.read().decode("utf8"))
 
 @click.command("init-db")
 @with_appcontext
