@@ -7,10 +7,10 @@ from flaskr.db import get_db
 
 def test_register(client, app):
     # test that viewing the page renders without template errors
-    assert client.get("/auth/register").status_code == 200
+    assert client.get("/register").status_code == 200
 
     # test that successful registration redirects to the login page
-    response = client.post("/auth/register", data={"username": "a", "password": "a"})
+    response = client.post("/register", data={"username": "a", "password": "a"})
     assert (response.status == '302 FOUND')
 
     # test that the user was inserted into the database
@@ -31,24 +31,24 @@ def test_register(client, app):
 )
 def test_register_validate_input(client, username, password, message):
     response = client.post(
-        "/auth/register", data={"username": username, "password": password}
+        "/register", data={"username": username, "password": password}
     )
     assert message in response.data
 
 
 def test_login(client, auth):
     # test that viewing the page renders without template errors
-    assert client.get("/auth/login").status_code == 200
+    assert client.get("/login").status_code == 200
 
     # test that successful login redirects to the index page
     response = auth.login()
-    assert response.headers["Location"] == "http://localhost/blog/index"
+    assert response.headers["Location"] == "http://localhost/recipe/index"
 
     # login request set the user_id in the session
     # check that the user is loaded from the session
     with client:
         client.get("/")
-        assert session["user_id"] == 1
+        assert session["user_id"] == 2
         assert g.user["username"] == "test"
 
 
