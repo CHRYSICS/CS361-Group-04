@@ -72,7 +72,8 @@ def save_recipe(recipe_id):
             (g.user["id"], recipe_id,)
         )
         db.commit()
-        flash(error, "Added to recipe book!")
+        error = "Added to recipe book!"
+        flash(error, "info")
         return redirect(url_for("recipe.index"))
 
     return redirect(url_for("recipe.index"))
